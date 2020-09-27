@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{31552490-12DF-4496-88FA-72DE69FC76F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terminal.Gui", "Terminal.Gui\Terminal.Gui.csproj", "{B004EB02-B748-400C-8540-AB4B6A3E00FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameEngine", "GameEngine\GameEngine.csproj", "{D9046C6E-1E08-4A0F-863B-5DB2E604EC39}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{8DF1C660-59FB-4BA0-B933-A3E05BF81C8E}"
+ProjectSection(SolutionItems) = preProject
+	README.md = README.md
+	.gitignore = .gitignore
+EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{31552490-12DF-4496-88FA-72DE69FC76F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{31552490-12DF-4496-88FA-72DE69FC76F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31552490-12DF-4496-88FA-72DE69FC76F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{31552490-12DF-4496-88FA-72DE69FC76F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B004EB02-B748-400C-8540-AB4B6A3E00FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B004EB02-B748-400C-8540-AB4B6A3E00FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B004EB02-B748-400C-8540-AB4B6A3E00FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B004EB02-B748-400C-8540-AB4B6A3E00FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9046C6E-1E08-4A0F-863B-5DB2E604EC39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9046C6E-1E08-4A0F-863B-5DB2E604EC39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9046C6E-1E08-4A0F-863B-5DB2E604EC39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9046C6E-1E08-4A0F-863B-5DB2E604EC39}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
