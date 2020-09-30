@@ -1,11 +1,13 @@
 # C# 2020
 
 ##About
+
 Karl Oskar Anderson - Tallinn University of Technology (TalTech)
 
 This project is done for ICD0008 C# course the purpose of learning C#, databases and Razor Pages.
     
 ##Credits
+
 - Andres Käver - instructor https://git.akaver.com/akaver
 - Karl Oskar Anderson - creator + design + code
 - Terminal.Gui/gui.cs - used library

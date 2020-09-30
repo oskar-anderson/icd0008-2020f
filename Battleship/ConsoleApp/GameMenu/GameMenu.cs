@@ -41,7 +41,7 @@ namespace ConsoleApp.GameMenu
 
 		public static MenuResult Start()
 		{
-			MenuBar menuBar = MenubarHolder.MenuBar; // all these menubar assignments allow app to stop and reload with new menubar
+			MenuBar? menuBar = MenubarHolder.MenuBar; // all these menubar assignments allow app to stop and reload with new menubar
 			do {
 				Application.Init ();
 				Colors.ColorSchemes["Menu"] = ActiveTopScheme; // This is for app top and the MenuItems (MenuBarItem children)
@@ -53,7 +53,8 @@ namespace ConsoleApp.GameMenu
                 
                 LoadMenu();
                 Application.Run();
-                menuBar = _menuBarToLoad ?? throw new Exception("value was null");
+
+                menuBar = _menuBarToLoad;
                 _menuBarToLoad = null;
                 Application.Shutdown();
 			} while (menuBar != null);
@@ -188,8 +189,8 @@ namespace ConsoleApp.GameMenu
 				Y = 0, 
 				Clicked = () =>
 				{
-					Int32.TryParse(slider1.Indicator.Text.ToString(), out var w);
-					Int32.TryParse(slider2.Indicator.Text.ToString(), out var h);
+					if (! Int32.TryParse(slider1.Indicator.Text.ToString(), out var w)) { throw new Exception("parse failed");};
+					if (! Int32.TryParse(slider2.Indicator.Text.ToString(), out var h)) { throw new Exception("parse failed");};
 					bool allowAdjacent = cb1.Checked;
 					ruleSetHolder = new RuleSet()
 					{
