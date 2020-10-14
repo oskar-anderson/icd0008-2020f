@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using Terminal.Gui;
-using Attribute = Terminal.Gui.Attribute;
 
-namespace ConsoleApp.GameMenu
+namespace ConsoleApp
 {
     public static class Global
     {

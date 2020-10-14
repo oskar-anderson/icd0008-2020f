@@ -21,8 +21,8 @@ namespace ConsoleApp.GameMenu
 		private static bool startGame;
 		private static RuleSet? ruleSetHolder;
 		
-		private delegate View[] MenuAction();
-		private static readonly List<MenuAction> MenuViewLevel = new List<MenuAction>() {MenuMain};
+		public delegate View[] MenuAction();
+		private static List<MenuAction> MenuViewLevel = new List<MenuAction>() { };
 		
 		
 		// for example 'FILE' is the MenuBarItem and 'Go back', 'Go main' and 'Quit' are the MenuItems
@@ -39,20 +39,33 @@ namespace ConsoleApp.GameMenu
 		// 	|                                                         |
 		// 	+---------------------------------------------------------+
 
+
 		public static MenuResult Start()
 		{
+			return Start(new List<MenuAction>() {getMenuMain()});
+		}
+		
+		public static MenuResult Start(List<MenuAction> menuActions)
+		{
+			MenuViewLevel = menuActions;
 			MenuBar? menuBar = MenubarHolder.MenuBar; // all these menubar assignments allow app to stop and reload with new menubar
 			do {
 				Application.Init ();
-				Colors.ColorSchemes["Menu"] = ActiveTopScheme; // This is for app top and the MenuItems (MenuBarItem children)
-				menuBar.ColorScheme = ActiveTopScheme;		   // This is for the MenuBarItem. Does not like curly bracket init. App needs to be init first.
-				_window = new Window() { Title = "BattleShip", X = 0, Y = 1, Width = Dim.Fill(), Height = Dim.Percent (80), ColorScheme = ActiveWindowScheme};
+				Colors.ColorSchemes["Menu"] = GetActiveTopScheme(); // This is for app top and the MenuItems (MenuBarItem children)
+				menuBar.ColorScheme = GetActiveTopScheme();		   // This is for the MenuBarItem. Does not like curly bracket init. App needs to be init first.
+				_window = new Window() { Title = "BattleShip", X = 0, Y = 1, Width = Dim.Fill(), Height = Dim.Percent (80)};
 				
 				Application.Top.Add(_window);
                 Application.Top.Add(menuBar);
-                
+
                 LoadMenu();
-                Application.Run();
+                
+                //Application.Driver.PrepareToRun();
+                var runToken = Application.Begin (Application.Top);
+                Application.RunLoop (runToken);
+                Application.End (runToken);
+                
+                // Application.Run();
 
                 menuBar = _menuBarToLoad;
                 _menuBarToLoad = null;
@@ -82,35 +95,35 @@ namespace ConsoleApp.GameMenu
 				X = 1,
 				Y = 0,
 				Clicked = () => AddAndExec(MenuStart),
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			var button2 = new MyButton("Load game")
 			{
 				X = Pos.Left(button1),
 				Y = Pos.Top(button1) + 1,
 				Clicked = () => JumpToMainAndExec(),
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			var button3 = new MyButton("Options")
 			{
 				X = Pos.Left(button2),
 				Y = Pos.Top(button2) + 1,
 				Clicked = () => AddAndExec(OptionsMenu),
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			var button4 = new MyButton("Credits and About")
 			{
 				X = Pos.Left(button3),
 				Y = Pos.Top(button3) + 1,
 				Clicked = () => AddAndExec(MenuAbout),
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			var button5 = new MyButton("Quit")
 			{
 				X = Pos.Left(button4),
 				Y = Pos.Top(button4) + 1,
 				Clicked = () => Application.RequestStop(),
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 
 			Label label1 = new Label("1.0.2b")
@@ -141,7 +154,7 @@ namespace ConsoleApp.GameMenu
 			
 			var OGAnTyYO = new Label("Source code - https://gitlab.cs.ttu.ee/kaande/icd0008-2020f") {X = 1, Y = rHLCLGFd.Y + 2,};
 
-			var ITVidmDZ = new MyButton("Back") { X = 1, Y = OGAnTyYO.Y + 2, Clicked = () => PopAndExec(), ColorScheme = ActiveInteractableScheme};
+			var ITVidmDZ = new MyButton("Back") { X = 1, Y = OGAnTyYO.Y + 2, Clicked = () => PopAndExec(), ColorScheme = GetActiveInteractableScheme()};
 
 			var result = new List<View>() {
 				hLYKsHBT,
@@ -162,7 +175,7 @@ namespace ConsoleApp.GameMenu
 		private static View[] MenuStart()
 		{
 			
-			var d5 = new MyButton("Load ruleset") { X = 1, Y = 1, Clicked = () => NotImplementedYet(), ColorScheme = ActiveInteractableScheme};
+			var d5 = new MyButton("Load ruleset") { X = 1, Y = 1, Clicked = () => NotImplementedYet(), ColorScheme = GetActiveInteractableScheme()};
 			var d6 = new Label("Ruleset:") { X = 1, Y = d5.Y + 2,};
 			
 			var slider1 = Slider.CreateSlider(
@@ -180,7 +193,7 @@ namespace ConsoleApp.GameMenu
 			{
 				X = 1,
 				Y = Pos.Top(slider2.Left) + 1,
-				ColorScheme = ActiveInteractableScheme,
+				ColorScheme = GetActiveInteractableScheme(),
 				Checked = false
 			};
 			
@@ -202,12 +215,12 @@ namespace ConsoleApp.GameMenu
 					startGame = true;
 					Application.RequestStop();
 				}, 
-				ColorScheme = ActiveInteractableScheme 
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			
-			var ITVidmDZ = new MyButton("Save ruleset") { X = 1, Y = cb1.Y + 1, Clicked = () => NotImplementedYet(), ColorScheme = ActiveInteractableScheme};
+			var ITVidmDZ = new MyButton("Save ruleset") { X = 1, Y = cb1.Y + 1, Clicked = () => NotImplementedYet(), ColorScheme = GetActiveInteractableScheme()};
 			
-			var back = new MyButton("Back") { X = 1, Y = ITVidmDZ.Y + 2, Clicked = () => PopAndExec(), ColorScheme = ActiveInteractableScheme };
+			var back = new MyButton("Back") { X = 1, Y = ITVidmDZ.Y + 2, Clicked = () => PopAndExec(), ColorScheme = GetActiveInteractableScheme() };
 
 			
 			var mousePos = new Label("Mouse: ") { X = 1, Y = Pos.AnchorEnd(1), Width = 60,};
@@ -242,15 +255,15 @@ namespace ConsoleApp.GameMenu
 				X = 1, 
 				Y = HtAEFVmk.Y + 1, 
 				RadioLabels = windowColors.Select(e => ustring.Make(e.Name)).ToArray(), 
-				SelectedItem = windowColors.Select(e => e.ColorScheme).ToList().IndexOf(ActiveWindowScheme),
+				SelectedItem = windowColors.Select(e => e.ColorScheme).ToList().IndexOf(GetActiveInteractableScheme()),
 				SelectedItemChanged = (selectedItemChangedArgs) =>
 				{
 					var newColor = windowColors[selectedItemChangedArgs.SelectedItem].ColorScheme;
 					if (_window == null) { throw new Exception("value was null"); }
 					_window.ColorScheme = newColor;
-					ActiveWindowScheme = newColor;
+					SetActiveWindowScheme(newColor);
 				},
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			
 			var TQuCEEMe = new Label("Interactable Color") {X = 1, Y = HtAEFVmk.Y + windowColors.Length + 2};
@@ -261,17 +274,17 @@ namespace ConsoleApp.GameMenu
 				X = 1, 
 				Y = HtAEFVmk.Y + windowColors.Length + 3, 
 				RadioLabels = interactableColors.Select(e => ustring.Make(e.Name)).ToArray(), 
-				SelectedItem = interactableColors.Select(e => e.ColorScheme).ToList().IndexOf(ActiveInteractableScheme),
+				SelectedItem = interactableColors.Select(e => e.ColorScheme).ToList().IndexOf(GetActiveInteractableScheme()),
 				SelectedItemChanged = (selectedItemChangedArgs) =>
 				{
 					var newColor = interactableColors[selectedItemChangedArgs.SelectedItem].ColorScheme;
-					ActiveInteractableScheme = newColor;
+					SetActiveInteractableScheme(newColor);
 					LoadMenu();
 				},
-				ColorScheme = ActiveInteractableScheme
+				ColorScheme = GetActiveInteractableScheme()
 			};
 			
-			var ITVidmDZ = new MyButton("Back") { X = 1, Y = Pos.Bottom(interactableRadio) + 1, Clicked = () => PopAndExec(), ColorScheme = ActiveInteractableScheme};
+			var ITVidmDZ = new MyButton("Back") { X = 1, Y = Pos.Bottom(interactableRadio) + 1, Clicked = () => PopAndExec(), ColorScheme = GetActiveInteractableScheme()};
 
 			var result = new List<View>(){
 				ntSrASFe,
@@ -313,6 +326,17 @@ namespace ConsoleApp.GameMenu
 		internal static int GetMenuLevel()
 		{
 			return MenuViewLevel.Count;
+		}
+
+
+		public static MenuAction getMenuMain()
+		{
+			return MenuMain;
+		}
+		
+		public static MenuAction getMenuStart()
+		{
+			return MenuStart;
 		}
 	}
 }

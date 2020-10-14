@@ -92,9 +92,16 @@ namespace ConsoleApp.GameMenu
                 };
             }
         }
-        public static ColorScheme ActiveInteractableScheme = InteractableCS.Interactable1;
-        public static ColorScheme ActiveWindowScheme = WindowCS.Window1;
-        public static ColorScheme ActiveTopScheme = TopBarCS.TopBar1;
+        private static ColorScheme _activeInteractableScheme = InteractableCS.Interactable1;
+        private static ColorScheme _activeWindowScheme = WindowCS.Window1;
+        private static ColorScheme _activeTopScheme = TopBarCS.TopBar1;
+
+        public static ColorScheme GetActiveTopScheme() => _activeTopScheme;
+        public static ColorScheme GetActiveInteractableScheme() => _activeInteractableScheme;
+        public static void SetActiveInteractableScheme(ColorScheme cs) => _activeInteractableScheme = cs;
+        public static ColorScheme GetActiveWindowScheme() => _activeWindowScheme;
+        public static void SetActiveWindowScheme(ColorScheme cs) => _activeWindowScheme = cs;
+        
         
         /*
          

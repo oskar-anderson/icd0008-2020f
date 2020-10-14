@@ -105,7 +105,7 @@ namespace ConsoleApp.TerminalGuiPlus
                 X = x,
                 Y = y,
                 Clicked = () => Update(false, middle, indicator, indicatorHelper),
-                ColorScheme = ActiveInteractableScheme,
+                ColorScheme = GetActiveInteractableScheme(),
                 HotKey = Key.F1
             };
 
@@ -114,7 +114,7 @@ namespace ConsoleApp.TerminalGuiPlus
                 X = xEnd,
                 Y = y,
                 Clicked = () => Update(true, middle, indicator, indicatorHelper),
-                ColorScheme = ActiveInteractableScheme,
+                ColorScheme = GetActiveInteractableScheme(),
                 HotKey = Key.InsertChar
             };
             
