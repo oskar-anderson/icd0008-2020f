@@ -2,6 +2,6 @@
     <PropertyGroup>
         <LangVersion>Latest</LangVersion>
         <Nullable>enable</Nullable>
-        <WarningsAsErrorss>CS8600;CS8602;CS8603;CS8613;CS8618;CS8625</WarningsAsErrorss>
+        <WarningsAsErrors>CS8600;CS8602;CS8603;CS8613;CS8618;CS8625</WarningsAsErrors>
     </PropertyGroup>
 </Project>

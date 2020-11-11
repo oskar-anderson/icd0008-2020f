@@ -1,10 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <NoWarn>CS8600;CS8602;CS8603;CS8613;CS8618;CS8625;CS8604;CS8601;CS8629;CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup>
     <TargetFrameworks>net472;netstandard2.0</TargetFrameworks>
     <RootNamespace>Terminal.Gui</RootNamespace>
     <AssemblyName>Terminal.Gui</AssemblyName>
     <DocumentationFile>bin\Release\Terminal.Gui.xml</DocumentationFile>
     <GenerateDocumentationFile Condition=" '$(Configuration)' == 'Release' ">true</GenerateDocumentationFile>
+    <Configurations>Debug;Release;Debug64</Configurations>
+    <Platforms>AnyCPU;x64</Platforms>
     <!-- moved to ../Directory.Build.props -->
     <!-- <AssemblyVersion>0.89.0.0</AssemblyVersion> -->
   </PropertyGroup>

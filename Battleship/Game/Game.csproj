@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <Configurations>Release;Debug;Debug64</Configurations>
+        <Platforms>AnyCPU;x64</Platforms>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Vendor\ConsoleGameEngine-Core-0.0.3\ConsoleGameEngineCore.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RogueSharp" Version="4.2.0" />
+      <PackageReference Include="Troschuetz.Random" Version="5.0.1" />
+
+        <Reference Include="irrKlang.NET4">
+            <HintPath>..\Vendor\irrKlang-64bit-1.6.0\bin\dotnet-4-64\irrKlang.NET4.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+    
+    
+    
+
+</Project>

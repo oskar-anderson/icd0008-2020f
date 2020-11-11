@@ -8,12 +8,28 @@ This project is done for ICD0008 C# course the purpose of learning C#, databases
 
 ## Credits
 
-- Andres Käver - instructor https://git.akaver.com/akaver
+- Andres Käver - instructor [gitlab](https://git.akaver.com/akaver)
 - Karl Oskar Anderson - creator + design + code
-- Terminal.Gui/gui.cs - used library
-- ConsoleGameEngine - used library
+
+## Used Libraries
+
+- [Terminal.Gui/gui.cs](https://github.com/migueldeicaza/gui.cs)
+- [ConsoleGameEngine](https://github.com/ollelogdahl/ConsoleGameEngine)
+- [Packing algorithm](https://github.com/nickgravelyn/SpriteSheetPacker/tree/master/sspack)
 
 
+## Sources on packing
+
+https://devel.nuclex.org/framework/wiki/RectanglePacking
+https://www.codeproject.com/Articles/210979/Fast-optimizing-rectangle-packing-algorithm-for-bu
+https://www.flipcode.com/archives/
+https://github.com/am11/RectanglePacker
+https://github.com/UnterrainerInformatik/collisiongrid
+
+## Interesting things
+
+- https://www.gridsagegames.com/rexpaint/
+- https://en.wikipedia.org/wiki/Code_page_775
 
 <!--
 ##Notes

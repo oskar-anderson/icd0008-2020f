@@ -12,11 +12,21 @@ namespace ConsoleApp.TerminalGuiPlus
         {
             public readonly Point Position;
             public readonly int Width;
+            public readonly int StartingProgress;
 
-            public BarHelper(int x, int y, int width)
+            public BarHelper(int x, int y, int width, int startingProgress)
             {
                 Position = new Point(x, y);
                 Width = width;
+                if (startingProgress > width)
+                {
+                    startingProgress = width;
+                }
+                else if (startingProgress < 0)
+                {
+                    startingProgress = 0;
+                }
+                StartingProgress = startingProgress;
             }
         }
         public class DescriptionHelper
@@ -67,8 +77,10 @@ namespace ConsoleApp.TerminalGuiPlus
             int x = barHelper.Position.X;
             int y = barHelper.Position.Y;
 
-            int xEnd = barHelper.Width + Global.ButtonTextLength + x;
-            int progress = barHelper.Width / 2;
+            string btnLeftText = "<";
+            string btnRightText = ">";
+            int xEnd = barHelper.Width + btnLeftText.Length + x;
+            int progress = barHelper.StartingProgress;
             var middleString = 
                 string.Concat(Enumerable.Repeat(Filled, progress)) + 
                 string.Concat(Enumerable.Repeat(Empty, barHelper.Width - progress));
@@ -90,17 +102,17 @@ namespace ConsoleApp.TerminalGuiPlus
             
             Label indicator = new Label(indicatorText)
             {
-                X = xEnd + Global.ButtonTextLength + 1,
+                X = xEnd + btnLeftText.Length + btnRightText.Length,
                 Y = y,
             };
             
             Label middle = new Label(middleString)
             {
-                X = x + Global.ButtonTextLength,
+                X = x + btnLeftText.Length,
                 Y = y,
             };
             
-            MyButton left = new MyButton("<")
+            MyButton left = new MyButton(btnLeftText)
             {
                 X = x,
                 Y = y,
@@ -109,7 +121,7 @@ namespace ConsoleApp.TerminalGuiPlus
                 HotKey = Key.F1
             };
 
-            MyButton right = new MyButton(">")
+            MyButton right = new MyButton(btnRightText)
             {
                 X = xEnd,
                 Y = y,

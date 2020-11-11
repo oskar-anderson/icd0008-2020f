@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ConsoleApp.GameMenu;
-using GameEngine;
+using DAL;
+using Game;
+using Microsoft.EntityFrameworkCore;
+using Point = RogueSharp.Point;
 
 namespace ConsoleApp
 {
@@ -9,67 +14,84 @@ namespace ConsoleApp
     {
         private static void Main()
         {
-            Console.CursorVisible = false;
-            RuleSet ruleSet = (RuleSet) Menu.Start();
-            if (ruleSet.ExitCode == "StartGame")
-            {
-                string[] ships = new[] {"xxxxx", "xxxx", "xxxx", "xxx", "xxx", "xxx", "xx", "xx", "xx", "xx"};
-                var game = new Game(ruleSet.BoardHeight, ruleSet.BoardWidth, ships, ruleSet.AdjacentTilesAllowed,
-                    false, -1);
-                game.Run();
-
-                while (true)
-                {
-                    var menuTree = new List<Menu.MenuAction>() {Menu.getMenuMain(), Menu.getMenuStart()};
-                    Menu.Start(menuTree);
-                    Console.CursorVisible = true;
-                    string result = QuickMenu();
-                    if (result == "1")
-                    {
-                        DataManager.LoadGameAction();
-                        new Game().Run();
-                    } 
-                    else if (result == "2")
-                    {
-                        GameDTO gameState = new GameDTO().Create();
-                        DataManager.SaveGameAction(gameState);
-                    }
-                    else if (result == "3")
-                    {
-                        Console.CursorVisible = false;
-                        new Game().Run();
-
-                    }
-                    else if (result == "4")
-                    {
-                        return;
-                    }
-                }
-            }
-        }
-
-        private static string QuickMenu()
-        {
-            Console.WriteLine("1. LoadGameAction");
-            Console.WriteLine("2. SaveGameAction");
-            Console.WriteLine("3. Continue");
-            Console.WriteLine("4. Quit");
+            List<Menu.MenuAction> menuTree = new List<Menu.MenuAction>() { Menu.getMenuMain() };
             while (true)
             {
-                string input = Console.ReadLine();
-                switch (input)
+                Console.CursorVisible = false;
+                bool isContinueActive = DbQueries.SavesAmount() != 0;
+                RuleSet ruleSet = Menu.Start(menuTree, isContinueActive);
+                
+                GameMain game;
+                switch (ruleSet.ExitCode)
                 {
-                    case "1":
-                        return "1";
-                    case "2":
-                        return "2";
-                    case "3":
-                        return "3";
-                    case "4":
-                        return "4";
+                    case ExitResult.Start:
+                        game = new GameMain(ruleSet.BoardHeight, ruleSet.BoardWidth, ruleSet.Ships, ruleSet.AllowedPlacementType, -1, -1);
+                        break;
+                    case ExitResult.Continue:
+                        DbQueries.TryGetGameWithIdx(0, ref GameMain.GameData);
+                        game = new GameMain();
+                        break;
+                    case ExitResult.Exit:
+                        return;
                     default:
-                        Console.WriteLine($"Unknown command: {input}");
+                        throw new Exception("unexpected");
+                }
+
+                bool gameOver = game.Run();
+                if (gameOver)
+                {
+                    return;
+                }
+                
+                PauseMenu.PauseResult result;
+                while (true)
+                {
+                    Console.CursorVisible = true;
+                    result = PauseMenu.Run();
+                    if (result == PauseMenu.PauseResult.LoadDb)
+                    {
+                        DbQueries.TryGetGameWithIdx(0, ref GameMain.GameData);
+                    }
+                    if (result == PauseMenu.PauseResult.LoadJson)
+                    {
+                        Game.Model.GameData? data;
+                        bool isGood = DataManager.LoadGameAction(out data);
+                        if (isGood)
+                        {
+                            if (data == null) { throw new Exception("unexpected"); }
+                            GameMain.GameData = data == null ? GameMain.GameData : data;
+                        }
+                    }
+                    if (result == PauseMenu.PauseResult.LoadDb 
+                        || result == PauseMenu.PauseResult.LoadJson
+                        || result == PauseMenu.PauseResult.Cont)
+                    {
+                        Console.CursorVisible = false;
+                        gameOver = new GameMain().Run();
+                        if (gameOver)
+                        {
+                            return;
+                        }
+                    }
+                    else { break; }
+                };
+                switch (result)
+                {
+                    case PauseMenu.PauseResult.SaveDb:
+                        DbQueries.SaveMainDb(GameMain.GameData);
+                        break;
+                    case PauseMenu.PauseResult.SaveJson:
+                        DataManager.SaveGameAction(GameMain.GameData);
+                        break;
+                    case PauseMenu.PauseResult.MainMenu:
+                        menuTree = new List<Menu.MenuAction>() { Menu.getMenuMain() };
                         continue;
+                }
+                if (result != PauseMenu.PauseResult.SaveDb &&
+                    result != PauseMenu.PauseResult.SaveJson &&
+                    result != PauseMenu.PauseResult.MainMenu)
+                {
+                    return;
                 }
             }
         }

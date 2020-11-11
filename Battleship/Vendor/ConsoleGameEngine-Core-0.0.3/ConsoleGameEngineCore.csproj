@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.1</TargetFramework>
         <RootNamespace>ConsoleGameEngineCore</RootNamespace>
+        <Configurations>Debug;Release;Debug64</Configurations>
+        <Platforms>AnyCPU;x64</Platforms>
+        <NoWarn>CS8600;CS8602;CS8603;CS8613;CS8618;CS8625</NoWarn>
     </PropertyGroup>
 
 </Project>

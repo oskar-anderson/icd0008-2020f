@@ -30,11 +30,7 @@ namespace ConsoleApp.GameMenu
 
         private static bool BackCanExecute()
         {
-            if (Global.KaverVer)
-            {
-                return Menu.GetMenuLevel() > 2;
-            }
-            return Menu.GetMenuLevel() > 1;
+            return Menu.GetMenuLevel() > 2;
         }
         
         private static bool MainCanExecute()
