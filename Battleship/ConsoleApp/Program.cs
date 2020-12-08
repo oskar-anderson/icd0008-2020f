@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ConsoleApp.GameMenu;
 using DAL;
+using Domain;
+using Domain.Model;
 using Game;
 using Microsoft.EntityFrameworkCore;
 using Point = RogueSharp.Point;
@@ -21,15 +23,17 @@ namespace ConsoleApp
                 bool isContinueActive = DbQueries.SavesAmount() != 0;
                 RuleSet ruleSet = Menu.Start(menuTree, isContinueActive);
                 
-                GameMain game;
+                ConsoleBattle game;
                 switch (ruleSet.ExitCode)
                 {
                     case ExitResult.Start:
-                        game = new GameMain(ruleSet.BoardHeight, ruleSet.BoardWidth, ruleSet.Ships, ruleSet.AllowedPlacementType, -1, -1);
+                        game = new ConsoleBattle(ruleSet.BoardHeight, ruleSet.BoardWidth, ruleSet.Ships, ruleSet.AllowedPlacementType, -1, -1);
                         break;
                     case ExitResult.Continue:
-                        DbQueries.TryGetGameWithIdx(0, ref GameMain.GameData);
-                        game = new GameMain();
+                        GameData? gameDataTemp;
+                        DbQueries.TryGetGameWithIdx(0, out gameDataTemp);
+                        if (gameDataTemp == null) { throw new Exception("unexpected!");}
+                        game = new ConsoleBattle(gameDataTemp);
                         break;
                     case ExitResult.Exit:
                         return;
@@ -37,8 +41,8 @@ namespace ConsoleApp
                         throw new Exception("unexpected");
                 }
 
-                bool gameOver = game.Run();
-                if (gameOver)
+                BaseBattleship.GameResult gameData = game.Run();
+                if (gameData.IsOver)
                 {
                     return;
                 }
@@ -50,38 +54,45 @@ namespace ConsoleApp
                     result = PauseMenu.Run();
                     if (result == PauseMenu.PauseResult.LoadDb)
                     {
-                        DbQueries.TryGetGameWithIdx(0, ref GameMain.GameData);
+                        GameData? gameDataTemp;
+                        DbQueries.TryGetGameWithIdx(0, out gameDataTemp);
+                        if (gameDataTemp == null) { throw new Exception("unexpected!");}
+                        game = new ConsoleBattle(gameDataTemp);
                     }
                     if (result == PauseMenu.PauseResult.LoadJson)
                     {
-                        Game.Model.GameData? data;
-                        bool isGood = DataManager.LoadGameAction(out data);
+                        GameData? gameDataTemp;
+                        bool isGood = DataManager.LoadGameAction(out gameDataTemp);
                         if (isGood)
                         {
-                            if (data == null) { throw new Exception("unexpected"); }
-                            GameMain.GameData = data == null ? GameMain.GameData : data;
+                            if (gameDataTemp == null) { throw new Exception("unexpected"); }
+                            game = new ConsoleBattle(gameDataTemp);
                         }
+                    }
+                    if (result == PauseMenu.PauseResult.Cont)
+                    {
+                        game = new ConsoleBattle(gameData.Data);
                     }
                     if (result == PauseMenu.PauseResult.LoadDb 
                         || result == PauseMenu.PauseResult.LoadJson
                         || result == PauseMenu.PauseResult.Cont)
                     {
                         Console.CursorVisible = false;
-                        gameOver = new GameMain().Run();
-                        if (gameOver)
+                        gameData = game.Run();
+                        if (gameData.IsOver)
                         {
                             return;
                         }
                     }
                     else { break; }
-                };
+                }
                 switch (result)
                 {
                     case PauseMenu.PauseResult.SaveDb:
-                        DbQueries.SaveMainDb(GameMain.GameData);
+                        DbQueries.SaveAndDeleteOthers(gameData.Data);
                         break;
                     case PauseMenu.PauseResult.SaveJson:
-                        DataManager.SaveGameAction(GameMain.GameData);
+                        DataManager.SaveGameAction(gameData.Data);
                         break;
                     case PauseMenu.PauseResult.MainMenu:
                         menuTree = new List<Menu.MenuAction>() { Menu.getMenuMain() };

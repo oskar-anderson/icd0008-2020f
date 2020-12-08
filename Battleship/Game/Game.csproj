@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Domain\Domain.csproj" />
       <ProjectReference Include="..\Vendor\ConsoleGameEngine-Core-0.0.3\ConsoleGameEngineCore.csproj" />
     </ItemGroup>
 

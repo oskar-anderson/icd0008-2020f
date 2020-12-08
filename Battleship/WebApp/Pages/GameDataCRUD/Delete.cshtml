@@ -1,0 +1,76 @@
+@page
+@model WebApp.Pages_GameDataCRUD.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>DbGameData</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.DateCreated)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.ActivePlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.ActivePlayer.ID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.InactivePlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.InactivePlayer.ID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.AllowedPlacementType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.AllowedPlacementType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.ShipSizesDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.ShipSizesDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.Phase)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.Phase)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.WinningPlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.WinningPlayer)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.FrameCount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.FrameCount)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="DbGameData.ID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

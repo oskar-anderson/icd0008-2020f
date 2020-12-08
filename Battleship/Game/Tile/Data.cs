@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 using System.Text;
 
 namespace Game.Tile
@@ -18,21 +21,22 @@ namespace Game.Tile
             public const int HitWater = 6;
             public const int SelectedTileGreen = 7;
             public const int ImpossibleShipHitbox = 8;
+            public const int VoidTile = 9;
         }
         
         public static readonly int[] HitTiles = {TileValue.HitShip, TileValue.HitWater};
         public static readonly int[] SeaTiles = {TileValue.EmptyTileV1, TileValue.EmptyTileV2};
 
         
-        private static class C
+        public static class C
         {
             public static int DD = TileColor.Black;
             public static int DB = TileColor.DarkBlue;
             public static int DG = TileColor.DarkGreen;
             public static int DC = TileColor.DarkCyan;
             public static int DR = TileColor.DarkRed;
-            public static int DY = TileColor.DarkYellow;
             public static int DM = TileColor.DarkMagenta;
+            public static int DY = TileColor.DarkYellow;
             public static int _S = TileColor.Gray;
             public static int DS = TileColor.DarkGray;
             public static int _B = TileColor.Blue;
@@ -51,8 +55,8 @@ namespace Game.Tile
             public static int DarkGreen = 2;
             public static int DarkCyan = 3;
             public static int DarkRed = 4;
-            public static int DarkYellow = 5;
-            public static int DarkMagenta = 6;
+            public static int DarkMagenta = 5;
+            public static int DarkYellow = 6;
             public static int Gray = 7;
             public static int DarkGray = 8;
             public static int Blue = 9;
@@ -70,6 +74,18 @@ namespace Game.Tile
         public static int GetWidth() => Width;
         public static int GetHeight() => Height;
 
+        public static readonly TileInfo VoidTile = new TileInfo(TileValue.VoidTile, new StringBuilder()
+                .Append("    ")
+                .Append("    ")
+                .Append("    ")
+                .Append("    "),
+            new int[]
+            {
+                C.__, C.__, C.__, C.__,
+                C.__, C.__, C.__, C.__,
+                C.__, C.__, C.__, C.__,
+                C.__, C.__, C.__, C.__
+            });
 
         public static readonly TileInfo EmptyTileV1 = new TileInfo(TileValue.EmptyTileV1, new StringBuilder()
                 .Append("~~~~")
@@ -79,8 +95,8 @@ namespace Game.Tile
             new int[]
             {
                 C.DC, C.DC, C.DC, C.DC,
-                C.DC, C.DY, C.DY, C.DC,
-                C.DC, C.DY, C.DY, C.DC,
+                C.DC, C.DM, C.DM, C.DC,
+                C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DC, C.DC, C.DC
             });
 
@@ -92,8 +108,8 @@ namespace Game.Tile
             new int[]
             {
                 C.DC, C.DC, C.DC, C.DC,
-                C.DC, C.DY, C.DY, C.DC,
-                C.DC, C.DY, C.DY, C.DC,
+                C.DC, C.DM, C.DM, C.DC,
+                C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DC, C.DC, C.DC
             });
 
@@ -199,6 +215,7 @@ namespace Game.Tile
             {ImpossibleShip.exponent, ImpossibleShip},
             {HitShip.exponent, HitShip},
             {HitWater.exponent, HitWater},
+            {VoidTile.exponent, VoidTile},
         };
 
 
@@ -221,10 +238,18 @@ namespace Game.Tile
         }
         
         
+
         public class CharInfo
         {
-            private char Glyph;
-            private int Color;
+            [Obsolete("This needs to be public for serialization. No set, only get!")]
+            public char Glyph { get; set; }
+            [Obsolete("This needs to be public for serialization. No set, only get!")]
+            public int Color { get; set; }
+            
+            public CharInfo()
+            {
+                // needed for deserialization
+            }
 
             public CharInfo(char glyph, int color)
             {

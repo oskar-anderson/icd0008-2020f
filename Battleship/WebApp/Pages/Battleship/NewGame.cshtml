@@ -1,0 +1,74 @@
+﻿@page
+@model WebApp.Pages.Battleship.NewGame
+
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<div>
+    <h3>Ruleset:</h3>
+    <form method="post">
+        <div class="form-group">
+            <label asp-for="BoardHeight"></label>
+            <input class="form-control" type="range" min="10" max="40" asp-for="BoardHeight">
+            <span asp-validation-for="BoardHeight"></span>
+            <label id="BoardHeightIndicator"></label>
+        </div>
+        <div class="form-group">
+            <label asp-for="BoardWidth"></label>
+            <input class="form-control" type="range" min="10" max="40" asp-for="BoardWidth">
+            <span asp-validation-for="BoardWidth"></span>
+            <label id="BoardWidthIndicator"></label>
+        </div>
+        <div class="form-group">
+            <label asp-for="AllowedPlacementType"></label>
+            <select class="form-control" asp-for="AllowedPlacementType">
+                <option value="0">No overlap</option>
+                <option value="1">No sides</option>
+                <option value="2" selected="selected">No corners</option>
+            </select>
+            <span asp-validation-for="AllowedPlacementType"></span>
+        </div>
+        <div>
+            <label asp-for="Ships"></label>
+            <input class="form-control" type="text" asp-for="Ships"/>
+            <span asp-validation-for="Ships"></span>
+            <span style="color: red">
+                @Model.ErrorMsg
+            </span>
+        </div>
+        <button type="submit" class="btn btn-primary">Start</button>
+    </form>
+</div>
+</body>
+</html>
+
+@section Scripts
+{
+    <script>
+    var sliderHeight = document.getElementById("BoardHeight");
+    var outputHeight = document.getElementById("BoardHeightIndicator");
+    outputHeight.innerHTML = sliderHeight.value; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    sliderHeight.oninput = function() 
+    {
+        outputHeight.innerHTML = this.value;
+    };
+    
+    var sliderWidth = document.getElementById("BoardWidth");
+    var outputWidth = document.getElementById("BoardWidthIndicator");
+    outputWidth.innerHTML = sliderWidth.value;
+
+    sliderWidth.oninput = function() 
+    {
+        outputWidth.innerHTML = this.value;
+    }
+    </script>
+
+    
+  <partial name="Shared/_ValidationScriptsPartial"/>
+}

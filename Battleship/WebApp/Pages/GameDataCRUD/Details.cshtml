@@ -1,0 +1,73 @@
+@page
+@model WebApp.Pages_GameDataCRUD.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>DbGameData</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.DateCreated)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.DateCreated)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.ActivePlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.ActivePlayer.ID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.InactivePlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.InactivePlayer.ID)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.AllowedPlacementType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.AllowedPlacementType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.ShipSizesDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.ShipSizesDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.Phase)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.Phase)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.WinningPlayer)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.WinningPlayer)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.FrameCount)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.FrameCount)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.DbGameData.ID">Edit</a> |
+    <a asp-page="./Index">Back to List</a>
+</div>

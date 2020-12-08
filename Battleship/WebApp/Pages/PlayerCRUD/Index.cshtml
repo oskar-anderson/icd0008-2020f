@@ -1,0 +1,120 @@
+@page
+@model WebApp.Pages_PlayerCRUD.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShipsDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].BoardDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].PPlayerDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShootingHistoryDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShipBeingPlacedIdx)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].IsViewingOwnBoard)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].IsHorizontalPlacement)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].PlayerType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fOffsetY)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fOffsetX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fScaleX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fScaleY)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fSelectedTileX)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fSelectedTileY)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.DbPlayerDTO) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipsDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BoardDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PPlayerDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShootingHistoryDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipBeingPlacedIdx)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsViewingOwnBoard)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsHorizontalPlacement)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PlayerType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fOffsetY)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fOffsetX)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fScaleX)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fScaleY)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fSelectedTileX)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.fSelectedTileY)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

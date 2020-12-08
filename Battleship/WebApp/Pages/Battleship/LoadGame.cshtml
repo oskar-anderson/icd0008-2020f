@@ -1,0 +1,22 @@
+﻿@page
+@using DAL
+@model WebApp.Pages.Battleship.Load
+
+<h1>Load game</h1>
+
+
+<div>
+    @foreach (DbGameData stateSave in Model.States)
+    {
+        <div>
+            <a asp-page="GameView" asp-route-id="@stateSave.ID" asp-route-delete="@false">
+                @stateSave.DateCreated
+            </a>
+            <form method="post">
+                <input type="hidden" name="id" value="@stateSave.ID" />
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </form>
+        </div>
+    }
+</div>
+

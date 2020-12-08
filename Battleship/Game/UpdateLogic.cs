@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Game.Model;
+using Domain;
+using Domain.Model;
 using Game.Pack;
 using Game.Tile;
 using IrrKlang;
@@ -14,262 +16,222 @@ namespace Game
 {
     [SuppressMessage("ReSharper", "InlineOutVariableDeclaration")]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public static class UpdateLogic
+    [SuppressMessage("ReSharper", "IdentifierTypo")]
+    public class UpdateLogic
     {
-       private static Player ActivePlayer
-       {
-          get => GameMain.GameData.ActivePlayer;
-          set => GameMain.GameData.ActivePlayer = value;
-       }
-
-       public static float fOffsetY
-       {
-          get => ActivePlayer.fOffsetY;
-          private set => ActivePlayer.fOffsetY = value;
-       }
-       public static float fOffsetX
-       {
-          get => ActivePlayer.fOffsetX;
-          private set => ActivePlayer.fOffsetX = value;
-       }
-       
-       
        private static float _fStartPanX = 0.0f;
        private static float _fStartPanY = 0.0f;
 
        private static bool _mouseLeftIsHeld = false;
-       private static double _fKeyboardLockedMillis = 0.0d;
-
-       private static Dictionary<ConsoleKey, bool> _newKeyDown = ResetKeyboardState();
-       private static Dictionary<ConsoleKey, bool> _currentTurnKeyDown = ResetKeyboardState();
+       private static double _fKeyboardLockedMillis = -1d;
        
-       /// <param name="gameTime">Provides a snapshot of timing values.</param>
-       public static bool Update(double gameTime)
+       private readonly BaseBattleship.UpdateExitAction UpdateExitActionStrategy;
+       private readonly BaseI_Input Input;
+       private readonly ISoundEngine SoundEngine;
+
+       public UpdateLogic(BaseBattleship.UpdateExitAction updateExitAction, BaseI_Input input, ISoundEngine soundEngine)
        {
-          if (GameMain.GameData.WinningPlayer != null)
+          UpdateExitActionStrategy = updateExitAction;
+          Input = input;
+          SoundEngine = soundEngine;
+       }
+
+       /// <param name="gameTime">Provides a snapshot of timing values.</param>
+       /// <param name="gameData">Game data</param>
+       /// <param name="drawLogicData">Properties like error messages and available dialog options used in drawing functions</param>
+       public bool Update(double gameTime, GameData gameData, out DrawLogicData drawLogicData)
+       {
+          drawLogicData = new DrawLogicData();
+          Input.UpdateKeyboardState();
+          if (gameData.WinningPlayer != null)
           {
-             while (true)
-             {
-                UpdateKeyboardState();
-                if (_newKeyDown[ConsoleKey.Z] || _newKeyDown[ConsoleKey.Escape])
-                {
-                   break;
-                }
+             if (Input.NewKeyDown[ConsoleKey.Z] || Input.NewKeyDown[ConsoleKey.Escape])
+             { 
+                UpdateExitActionStrategy(); 
+                return false;
              }
-             Helper.FixConsole();
-             Console.CursorVisible = true;
-             return false;
+             return true;
           }
-          UpdateKeyboardState();
-          
-          if (_newKeyDown[ConsoleKey.Escape])
+
+          if (Input.NewKeyDown[ConsoleKey.Escape])
           {
-             Helper.FixConsole();
-             Console.CursorVisible = true;
+             UpdateExitActionStrategy();
              return false;
           }
 
           _fKeyboardLockedMillis = Math.Max(-1d, _fKeyboardLockedMillis - gameTime);
           bool lockKeyboard = false;
-          HandlePlayerMovement(ref lockKeyboard);
+          HandlePlayerMovement(ref lockKeyboard, gameData.ActivePlayer);
           _fKeyboardLockedMillis = lockKeyboard ? 0.1d : _fKeyboardLockedMillis;
           
-          
-          if (_newKeyDown[ConsoleKey.C])
-          {
-             ActivePlayer.IsViewingOwnBoard = !ActivePlayer.IsViewingOwnBoard;
-             ActivePlayer.BoardHover.Clear();
-             return true;
-          }
-
-          DrawLogic.DialogOptions.Clear();
-          ResolvePhase();
+          drawLogicData.DialogOptions.Clear();
+          ResolvePhase(gameData, drawLogicData);
           
 
-          HandleZooming();
-          HandleKeyboardPanning(gameTime);
-          HandleMousePanning();
+          HandleZooming(gameData.ActivePlayer);
+          HandleKeyboardPanning(gameTime, gameData.ActivePlayer);
+          HandleMousePanning(gameData.ActivePlayer);
+          HandleMouseSelection(gameData.ActivePlayer);
           
           return true;
        }
 
-       private static Dictionary<ConsoleKey, bool> ResetKeyboardState()
+       private void ResolvePhase(GameData gameData, DrawLogicData drawLogicData)
        {
-          var currentTurnKeyDown = new Dictionary<ConsoleKey, bool>
-          {
-             [ConsoleKey.R] = GameMain.ConsoleEngine.GetKey(ConsoleKey.R),
-             [ConsoleKey.X] = GameMain.ConsoleEngine.GetKey(ConsoleKey.X),
-             [ConsoleKey.Escape] = GameMain.ConsoleEngine.GetKey(ConsoleKey.Escape),
-             [ConsoleKey.C] = GameMain.ConsoleEngine.GetKey(ConsoleKey.C),
-             [ConsoleKey.Z] = GameMain.ConsoleEngine.GetKey(ConsoleKey.Z),
-             [ConsoleKey.D1] = GameMain.ConsoleEngine.GetKey(ConsoleKey.D1),
-             [ConsoleKey.D2] = GameMain.ConsoleEngine.GetKey(ConsoleKey.D2),
-          };
-          return currentTurnKeyDown;
-       }
-
-       private static void UpdateKeyboardState()
-       {
-          Dictionary<ConsoleKey, bool> lastTurnKeyDown = _currentTurnKeyDown.ToDictionary(entry => entry.Key, entry => entry.Value);
-          _currentTurnKeyDown = ResetKeyboardState();
-
-          _newKeyDown = new Dictionary<ConsoleKey, bool>();
-          foreach (var key in lastTurnKeyDown.Keys)
-          {
-             _newKeyDown[key] = _currentTurnKeyDown[key] && !lastTurnKeyDown[key];
-          }
-       }
-
-       private static void ResolvePhase()
-       {
-          switch (GameMain.GameData.Phase)
+          switch (gameData.Phase)
           {
              case 1:
-                TileFunctions.playerTileValue = GameMain.GetBoard().Get(ActivePlayer.PPlayer) != TileData.TileValue.Ship ? 
+                drawLogicData.PlayerTileValue = BaseBattleship.GetBoard(gameData).Get(gameData.ActivePlayer.PPlayer) != TileData.TileValue.Ship ? 
                    TileData.SelectedTileGreen.exponent : 
                    TileData.SelectedTileRed.exponent;
 
-                DrawLogic.DialogOptions.Add("Randomize");
-                ConsoleKey dialogRandomize = ConsoleKey.D1;
-                
-                
-                ConsoleKey dialogStart = default;
-                if (ActivePlayer.ShipBeingPlacedIdx == -1)
+                const ConsoleKey dialogAction = ConsoleKey.Z;
+                const ConsoleKey dialogRot = ConsoleKey.X;
+                const ConsoleKey dialogRandomize = ConsoleKey.D1;
+                const ConsoleKey dialogClear = ConsoleKey.D2;
+                const ConsoleKey dialogStart = ConsoleKey.D3;
+
+                ShipPlacementStatus shipPlacementStatus = GetShipPlacementStatus(gameData);
+                Dictionary<ConsoleKey, DrawLogicData.DialogItem> activeKeys = new Dictionary<ConsoleKey, DrawLogicData.DialogItem>() 
                 {
-                   DrawLogic.DialogOptions.Add("Start");
-                   dialogStart = ConsoleKey.D2;
+                   { dialogAction, new DrawLogicData.DialogItem(shipPlacementStatus.isPlaceable, "Z", "Place") },
+                   { dialogRot, new DrawLogicData.DialogItem(shipPlacementStatus.hitboxRect != null,"X", "Rotate") },
+                   { dialogRandomize, new DrawLogicData.DialogItem(gameData.ActivePlayer.IsViewingOwnBoard,"1", "Randomize") },
+                   { dialogClear, new DrawLogicData.DialogItem(gameData.ActivePlayer.IsViewingOwnBoard,"2", "Clear") },
+                   { dialogStart, new DrawLogicData.DialogItem(shipPlacementStatus.isStartable,"3", "Start") }
+                };
+                
+                foreach (var keyValuePair in activeKeys.Where(keyValuePair => keyValuePair.Value.isActive))
+                {
+                   drawLogicData.DialogOptions.Add(keyValuePair.Value);
                 }
                 
-                if (dialogStart != default && _newKeyDown[dialogStart])
+                if (activeKeys[dialogStart].isActive && Input.NewKeyDown[dialogStart])
                 {
-                   (ActivePlayer, GameMain.GameData.InactivePlayer) = (GameMain.GameData.InactivePlayer, ActivePlayer);
-                   if (ActivePlayer.ShipBeingPlacedIdx == -1)
+                   (gameData.ActivePlayer, gameData.InactivePlayer) = (gameData.InactivePlayer, gameData.ActivePlayer);
+                   shipPlacementStatus = GetShipPlacementStatus(gameData);
+                   if (gameData.ActivePlayer.ShipBeingPlacedIdx == -1)
                    {
-                      ActivePlayer.IsViewingOwnBoard = !ActivePlayer.IsViewingOwnBoard;
-                      GameMain.GameData.InactivePlayer.IsViewingOwnBoard = !GameMain.GameData.InactivePlayer.IsViewingOwnBoard;
-                      GameMain.GameData.Phase = 2;
+                      gameData.ActivePlayer.IsViewingOwnBoard = !gameData.ActivePlayer.IsViewingOwnBoard;
+                      gameData.InactivePlayer.IsViewingOwnBoard = !gameData.InactivePlayer.IsViewingOwnBoard;
+                      gameData.Phase = 2;
                       return;
                    }
                 }
                           
-                if (dialogRandomize != default && _newKeyDown[dialogRandomize])
+                if (activeKeys[dialogRandomize].isActive && Input.NewKeyDown[dialogRandomize])
                 {
-                   ActivePlayer.Board = TileFunctions.GetRndSeaTiles(GameMain.GameData.BoardWidth, GameMain.GameData.BoardHeight);
-                   ActivePlayer.Ships.Clear();
-                   ActivePlayer.ShipBeingPlacedIdx = -1;
-                   ActivePlayer.BoardHover.Clear();
+                   gameData.ActivePlayer.Board = TileFunctions.GetRndSeaTiles(gameData.ActivePlayer.Board.GetWidth(), gameData.ActivePlayer.Board.GetHeight());
+                   gameData.ActivePlayer.Ships.Clear();
+                   gameData.ActivePlayer.ShipBeingPlacedIdx = -1;
                    List<Rectangle> newBoard = ShipPlacement.PlaceShips(
-                      GameMain.GameData.ShipSizes,
-                      GameMain.GameData.BoardWidth,
-                      GameMain.GameData.BoardHeight, 
-                      GameMain.GameData.AllowedPlacementType);
+                      gameData.ShipSizes,
+                      gameData.ActivePlayer.Board.GetWidth(),
+                      gameData.ActivePlayer.Board.GetHeight(), 
+                      gameData.AllowedPlacementType);
+                   gameData.ActivePlayer.Ships = newBoard;
                    foreach (var ship in newBoard)
                    {
                       List<Point> points = ship.ToPoints();
                       foreach (var p in points)
                       {
-                         ActivePlayer.Board.Set(p, TileData.Ship.exponent);
-                      }
-                      ActivePlayer.Ships.Add(ship);
-                   }
-                }
-
-                if (_newKeyDown[ConsoleKey.R])
-                {
-                   ActivePlayer.Ships.Clear();
-                   ActivePlayer.ShipBeingPlacedIdx = 0;
-                   ActivePlayer.Board = TileFunctions.GetRndSeaTiles(GameMain.GameData.BoardWidth, GameMain.GameData.BoardHeight);
-                }
-
-                if (_newKeyDown[ConsoleKey.X])
-                {
-                   ActivePlayer.IsHorizontalPlacement = !ActivePlayer.IsHorizontalPlacement;
-                }
-                
-                if (ActivePlayer.IsViewingOwnBoard && ActivePlayer.ShipBeingPlacedIdx != -1)
-                {
-                   Point ship = GameMain.GameData.ShipSizes[ActivePlayer.ShipBeingPlacedIdx];
-                   Rectangle rect = GameMain.GameData.ActivePlayer.IsHorizontalPlacement ? 
-                      new Rectangle(ActivePlayer.PPlayer.X, ActivePlayer.PPlayer.Y, ship.X, ship.Y) :
-                      new Rectangle(ActivePlayer.PPlayer.X, ActivePlayer.PPlayer.Y, ship.Y, ship.X);
-                   List<Point> modelPoints;
-                   if (CanPlaceShip(out modelPoints, rect))
-                   {
-                      // System.IO.Directory.GetParent("../../../../");
-                      if (_newKeyDown[ConsoleKey.Z])
-                      {
-                         PlaceShip(modelPoints, rect);
-                         GameMain.SoundEngine.Play2D("../../../../../media/flashlight_holster.ogg");
+                         gameData.ActivePlayer.Board.Set(p, TileData.Ship.exponent);
                       }
                    }
+                   shipPlacementStatus = GetShipPlacementStatus(gameData);
+                }
+
+                if (activeKeys[dialogClear].isActive && Input.NewKeyDown[dialogClear])
+                {
+                   gameData.ActivePlayer.Ships.Clear();
+                   gameData.ActivePlayer.ShipBeingPlacedIdx = 0;
+                   gameData.ActivePlayer.Board = TileFunctions.GetRndSeaTiles(gameData.ActivePlayer.Board.GetWidth(), gameData.ActivePlayer.Board.GetHeight());
+                   shipPlacementStatus = GetShipPlacementStatus(gameData);
+                }
+
+                if (shipPlacementStatus.isPlaceable && activeKeys[dialogAction].isActive && Input.NewKeyDown[dialogAction])
+                {
+                   if (shipPlacementStatus.modelPoints == null || shipPlacementStatus.hitboxRect == null) { throw new Exception("Unexpected!");}
+                   PlaceShip(shipPlacementStatus.modelPoints, (Rectangle) shipPlacementStatus.hitboxRect, 
+                      BaseBattleship.GetBoard(gameData), gameData.ActivePlayer, 
+                      gameData.ShipSizes.Count, drawLogicData);
+                   SoundEngine.Play2D("../../../../../media/flashlight_holster.ogg");
+                }
+
+                if (activeKeys[dialogRot].isActive && Input.NewKeyDown[dialogRot])
+                {
+                   gameData.ActivePlayer.IsHorizontalPlacement = !gameData.ActivePlayer.IsHorizontalPlacement;
                 }
                 break;
              
              
              case 2:
-                int selectedOppTileValue = GameMain.GameData.InactivePlayer.Board.Get(ActivePlayer.PPlayer);
-                if (_newKeyDown[ConsoleKey.Z] && ! TileData.HitTiles.Contains(selectedOppTileValue))
+                int selectedOppTileValue = gameData.InactivePlayer.Board.Get(gameData.ActivePlayer.PPlayer);
+                drawLogicData.DialogOptions.Add(new DrawLogicData.DialogItem(true, "Z", "Shoot"));
+                if (Input.NewKeyDown[ConsoleKey.Z] && ! TileData.HitTiles.Contains(selectedOppTileValue))
                 {
                    if (TileData.SeaTiles.Contains(selectedOppTileValue))
                    { 
-                      ActivePlayer.ShootingHistory.Push(
+                      gameData.ActivePlayer.ShootingHistory.Push(
                          new ShootingHistoryItem(
-                            ActivePlayer.PPlayer,
+                            gameData.ActivePlayer.PPlayer,
                             selectedOppTileValue,
                             TileData.HitWater.exponent, 
                             null)
                       );
-                      GameMain.GameData.InactivePlayer.Board.Set(ActivePlayer.PPlayer, TileData.HitWater.exponent);
-                      (ActivePlayer, GameMain.GameData.InactivePlayer) = (GameMain.GameData.InactivePlayer, ActivePlayer);
-                      GameMain.SoundEngine.Play2D("../../../../../media/Water_Impact_2.wav");
+                      gameData.InactivePlayer.Board.Set(gameData.ActivePlayer.PPlayer, TileData.HitWater.exponent);
+                      (gameData.ActivePlayer, gameData.InactivePlayer) = (gameData.InactivePlayer, gameData.ActivePlayer);
+                      SoundEngine.Play2D("../../../../../media/Water_Impact_2.wav");
                       return;
                    }
                    if (TileData.TileValue.Ship == selectedOppTileValue)
                    {
-                      Rectangle rect = GameMain.GameData.InactivePlayer.Ships.FirstOrDefault(x => x.Contains(ActivePlayer.PPlayer));
+                      Rectangle rect = gameData.InactivePlayer.Ships.FirstOrDefault(x => x.Contains(gameData.ActivePlayer.PPlayer));
                       List<Point> rectAsPoints = rect.ToPoints();
                       bool isShipDestroyed = rectAsPoints
-                         .Where(p => p != ActivePlayer.PPlayer)
-                         .All(p => GameMain.GameData.InactivePlayer.Board.Get(p) == TileData.HitShip.exponent);
+                         .Where(p => p != gameData.ActivePlayer.PPlayer)
+                         .All(p => gameData.InactivePlayer.Board.Get(p) == TileData.HitShip.exponent);
 
                       if (isShipDestroyed)
                       {
-                         List<Point> hitboxRectAsPoints = rect.ToHitboxPoints(GameMain.GameData.AllowedPlacementType);
-                         List<ShootingHistoryItem> changes = GetAreaOfSunkenShipRevealChanges(hitboxRectAsPoints, GameMain.GameData.InactivePlayer.Board);
+                         List<Point> hitboxRectAsPoints = rect.ToHitboxPoints(gameData.AllowedPlacementType);
+                         List<ShootingHistoryItem> changes = GetAreaOfSunkenShipRevealChanges(hitboxRectAsPoints, gameData.InactivePlayer.Board);
                          foreach (var change in changes)
                          {
-                            GameMain.GameData.InactivePlayer.Board.Set(change.point, change.currValue);
+                            gameData.InactivePlayer.Board.Set(change.point, change.currValue);
                          }
-                         ActivePlayer.ShootingHistory.Push(new ShootingHistoryItem(
-                            ActivePlayer.PPlayer,
+                         gameData.ActivePlayer.ShootingHistory.Push(new ShootingHistoryItem(
+                            gameData.ActivePlayer.PPlayer,
                             selectedOppTileValue,
                             TileData.HitShip.exponent, 
                             changes));
-                         GameMain.SoundEngine.Play2D("../../../../../media/bigExp.wav");
+                         SoundEngine.Play2D("../../../../../media/bigExp.wav");
                          
                          List<bool> areAllShipsDestroyed = new List<bool>();
-                         foreach (var points in GameMain.GameData.InactivePlayer.Ships.Select(ship => ship.ToPoints()))
+                         foreach (var points in gameData.InactivePlayer.Ships.Select(ship => ship.ToPoints()))
                          {
-                            areAllShipsDestroyed.Add(points.All(point => GameMain.GameData.InactivePlayer.Board.Get(point) == TileData.HitShip.exponent));
+                            areAllShipsDestroyed.Add(
+                               points.All(point => gameData.InactivePlayer.Board.Get(point) == TileData.HitShip.exponent)
+                            );
                          }
 
                          if (areAllShipsDestroyed.All(x => x))
                          {
-                            GameMain.GameData.WinningPlayer = ActivePlayer.Name;
+                            gameData.WinningPlayer = gameData.ActivePlayer.Name;
                          }
                          
                       }
                       else
                       {
-                         GameMain.GameData.InactivePlayer.Board.Set(ActivePlayer.PPlayer, TileData.HitShip.exponent);
-                         ActivePlayer.ShootingHistory.Push(
+                         gameData.InactivePlayer.Board.Set(gameData.ActivePlayer.PPlayer, TileData.HitShip.exponent);
+                         gameData.ActivePlayer.ShootingHistory.Push(
                             new ShootingHistoryItem(
-                               ActivePlayer.PPlayer,
+                               gameData.ActivePlayer.PPlayer,
                                selectedOppTileValue,
                                TileData.HitShip.exponent, 
                                null)
                          );
-                         GameMain.SoundEngine.Play2D("../../../../../media/missileExplode.wav");
+                         SoundEngine.Play2D("../../../../../media/missileExplode.wav");
                       }
                    }
                    else {
@@ -277,24 +239,58 @@ namespace Game
                    }
                 }
 
-                if (_newKeyDown[ConsoleKey.R] && ActivePlayer.ShootingHistory.Count != 0)
+                if (Input.NewKeyDown[ConsoleKey.R] && gameData.ActivePlayer.ShootingHistory.Count != 0)
                 {
-                   ShootingHistoryItem historyItem = ActivePlayer.ShootingHistory.Pop();
+                   ShootingHistoryItem historyItem = gameData.ActivePlayer.ShootingHistory.Pop();
                    if (historyItem.allChangedPoints != null)
                    {
                       foreach (var changedPoint in historyItem.allChangedPoints) 
                       { 
-                         GameMain.GameData.InactivePlayer.Board.Set(changedPoint.point, changedPoint.prevValue); 
+                         gameData.InactivePlayer.Board.Set(changedPoint.point, changedPoint.prevValue); 
                       }
                    }
                    else
                    {
-                      GameMain.GameData.InactivePlayer.Board.Set(historyItem.point, historyItem.prevValue);
+                      gameData.InactivePlayer.Board.Set(historyItem.point, historyItem.prevValue);
                    }
                 }
                 break;
              default:
                 throw new Exception("Unexpected!");
+          }
+       }
+
+
+       public static ShipPlacementStatus GetShipPlacementStatus(GameData gameData)
+       {
+          if (gameData.ActivePlayer.IsViewingOwnBoard && gameData.ActivePlayer.ShipBeingPlacedIdx != -1)
+          {
+             Point shipBeingPlaced = gameData.ShipSizes[gameData.ActivePlayer.ShipBeingPlacedIdx];
+             Rectangle hitboxRect = gameData.ActivePlayer.IsHorizontalPlacement ? 
+                new Rectangle(gameData.ActivePlayer.PPlayer.X, gameData.ActivePlayer.PPlayer.Y, shipBeingPlaced.Y, shipBeingPlaced.X) :
+                new Rectangle(gameData.ActivePlayer.PPlayer.X, gameData.ActivePlayer.PPlayer.Y, shipBeingPlaced.X, shipBeingPlaced.Y);
+             if (CanPlaceShip(out List<Point> modelPoints, hitboxRect, gameData))
+             {
+                return new ShipPlacementStatus(false, true, hitboxRect, modelPoints);
+             }
+             return new ShipPlacementStatus(false, false, hitboxRect, null);
+          }
+          return new ShipPlacementStatus(true, false, null, null);
+       }
+
+       public struct ShipPlacementStatus
+       {
+          public readonly bool isStartable;
+          public readonly bool isPlaceable;
+          public readonly Rectangle? hitboxRect;
+          public readonly List<Point>? modelPoints;
+
+          public ShipPlacementStatus(bool isStartable, bool isPlaceable, Rectangle? hitboxRect, List<Point>? modelPoints)
+          {
+             this.isStartable = isStartable;
+             this.isPlaceable = isPlaceable;
+             this.hitboxRect = hitboxRect;
+             this.modelPoints = modelPoints;
           }
        }
 
@@ -343,211 +339,299 @@ namespace Game
           return shootingHistoryItems;
 
        }
-
-       public static void WorldToScreen(float fWorldX, float fWorldY, out int nScreenX, out int nScreenY)
+       public static void WorldToScreen(
+          float fWorldX, float fWorldY, 
+          Player player, 
+          out int nScreenX, out int nScreenY)
        {
-          nScreenX = (int) Math.Floor((fWorldX - fOffsetX) * ActivePlayer.fScaleX);
-          nScreenY = (int) Math.Floor((fWorldY - fOffsetY) * ActivePlayer.fScaleY);
+          nScreenX = (int) Math.Floor((fWorldX - player.fOffsetX) * player.fScaleX);
+          nScreenY = (int) Math.Floor((fWorldY - player.fOffsetY) * player.fScaleY);
+       }
+
+       public static void WorldToScreen(
+          float fWorldX, float fWorldY, 
+          float fScaleX, float fScaleY, 
+          float fOffsetX, float fOffsetY, 
+          out int nScreenX, out int nScreenY)
+       {
+          nScreenX = (int) Math.Floor((fWorldX - fOffsetX) * fScaleX);
+          nScreenY = (int) Math.Floor((fWorldY - fOffsetY) * fScaleY);
+       }
+       
+       public static void ScreenToWorld(
+          int nScreenX, int nScreenY, 
+          Player player, 
+          out float fWorldX, out float fWorldY)
+       {
+          fWorldX = (nScreenX / player.fScaleX) + player.fOffsetX;
+          fWorldY = (nScreenY / player.fScaleY) + player.fOffsetY;
        }
           
-          
-       public static void ScreenToWorld(int nScreenX, int nScreenY, out float fWorldX, out float fWorldY)
+       public static void ScreenToWorld(
+          int nScreenX, int nScreenY, 
+          float fScaleX, float fScaleY, 
+          float fOffsetX, float fOffsetY, 
+          out float fWorldX, out float fWorldY)
        {
-          fWorldX = (nScreenX / ActivePlayer.fScaleX) + fOffsetX;
-          fWorldY = (nScreenY / ActivePlayer.fScaleY) + fOffsetY;
+          fWorldX = (nScreenX / fScaleX) + fOffsetX;
+          fWorldY = (nScreenY / fScaleY) + fOffsetY;
        }
 
 
-       private static void HandlePlayerMovement(ref bool lockKeyboard)
+       private void HandlePlayerMovement(ref bool lockKeyboard, Player player)
        {
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.A) || GameMain.ConsoleEngine.GetKey(ConsoleKey.LeftArrow))
+          if (Input.KeyDown[ConsoleKey.A] || Input.KeyDown[ConsoleKey.LeftArrow])
           {
-             if (ActivePlayer.PPlayer.X > 0 && _fKeyboardLockedMillis < 0)
+             if (player.PPlayer.X > 0 && _fKeyboardLockedMillis < 0)
              {
-                ActivePlayer.PPlayer = new Point(ActivePlayer.PPlayer.X - 1, ActivePlayer.PPlayer.Y);
+                player.PPlayer = new Point(player.PPlayer.X - 1, player.PPlayer.Y);
                 lockKeyboard = true;
-                fOffsetX -= TileData.GetWidth();
+                player.fOffsetX -= TileData.GetWidth();
              }
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.S) || GameMain.ConsoleEngine.GetKey(ConsoleKey.DownArrow))
+          if (Input.KeyDown[ConsoleKey.S] || Input.KeyDown[ConsoleKey.DownArrow])
           {
-             if (ActivePlayer.PPlayer.Y < GameMain.GameData.BoardHeight - 1 && _fKeyboardLockedMillis < 0)
+             if (player.PPlayer.Y < player.Board.GetHeight() - 1 && _fKeyboardLockedMillis < 0)
              {
-                ActivePlayer.PPlayer = new Point(ActivePlayer.PPlayer.X, ActivePlayer.PPlayer.Y + 1);
+                player.PPlayer = new Point(player.PPlayer.X, player.PPlayer.Y + 1);
                 lockKeyboard = true;
-                fOffsetY += TileData.GetHeight();
+                player.fOffsetY += TileData.GetHeight();
              }
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.D) || GameMain.ConsoleEngine.GetKey(ConsoleKey.RightArrow))
+          if (Input.KeyDown[ConsoleKey.D] || Input.KeyDown[ConsoleKey.RightArrow])
           {
-             if (ActivePlayer.PPlayer.X < GameMain.GameData.BoardWidth - 1 && _fKeyboardLockedMillis < 0)
+             if (player.PPlayer.X < player.Board.GetWidth() - 1 && _fKeyboardLockedMillis < 0)
              {
-                ActivePlayer.PPlayer = new Point(ActivePlayer.PPlayer.X + 1, ActivePlayer.PPlayer.Y);
+                player.PPlayer = new Point(player.PPlayer.X + 1, player.PPlayer.Y);
                 lockKeyboard = true;
-                fOffsetX += TileData.GetWidth();
+                player.fOffsetX += TileData.GetWidth();
              }
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.W) || GameMain.ConsoleEngine.GetKey(ConsoleKey.UpArrow))
+          if (Input.KeyDown[ConsoleKey.W] || Input.KeyDown[ConsoleKey.UpArrow])
           {
-             if (ActivePlayer.PPlayer.Y > 0 && _fKeyboardLockedMillis < 0)
+             if (player.PPlayer.Y > 0 && _fKeyboardLockedMillis < 0)
              {
-                ActivePlayer.PPlayer = new Point(ActivePlayer.PPlayer.X, ActivePlayer.PPlayer.Y - 1);
+                player.PPlayer = new Point(player.PPlayer.X, player.PPlayer.Y - 1);
                 lockKeyboard = true;
-                fOffsetY -= TileData.GetHeight();
+                player.fOffsetY -= TileData.GetHeight();
              }
           }
        }
 
-       private static bool CanPlaceShip(out List<Point> modelPoints, Rectangle rect)
+       private static bool CanPlaceShip(out List<Point> modelPoints, Rectangle rect, GameData gameData)
        {
+          CanPlaceShipData canPlaceShipData = CanPlaceShipCommon(rect, gameData);
           modelPoints = new List<Point>();
-          List<Point> hitboxRectAsPoints = rect.ToHitboxPoints(GameMain.GameData.AllowedPlacementType);
-          Rectangle board = new Rectangle(0, 0, GameMain.GameData.BoardWidth, GameMain.GameData.BoardHeight);
-          ActivePlayer.BoardHover = new List<Player.HoverElement>();
-          bool canBePlacedEntirely = true;
+          for (int i = 0; i < canPlaceShipData.hitboxOutOfBounds.Count; i++)
+          {
+             if (canPlaceShipData.hitboxOutOfBounds[i]) { continue; }
+             if (canPlaceShipData.isPointInModelBox[i])
+             {
+                modelPoints.Add(canPlaceShipData.Points[i]);
+             }
+          }
+          return canPlaceShipData.shipPointIsPlaceable.All(x => x);
+       }
+       
+       public static CanPlaceShipHoverStatus CanPlaceShipHover(Rectangle rect, GameData gameData)
+       {
+          List<Player.HoverElement> boardHover = new List<Player.HoverElement>();
+          CanPlaceShipData canPlaceShipData = CanPlaceShipCommon(rect, gameData);
+          for (var i = 0; i < canPlaceShipData.hitboxOutOfBounds.Count; i++)
+          {
+             if (canPlaceShipData.hitboxOutOfBounds[i]) { continue; }
+             TileData.TileInfo tile;
+             if (canPlaceShipData.shipPointIsPlaceable[i])
+             {
+                tile = canPlaceShipData.isPointInModelBox[i] ? TileData.Ship : TileData.ImpossibleShipHitbox;
+             }
+             else
+             {
+                tile = TileData.ImpossibleShip;
+             }
+             boardHover.Add(new Player.HoverElement(canPlaceShipData.Points[i], tile.exponent));
+          }
+
+          bool canBePlacedEntirely = canPlaceShipData.shipPointIsPlaceable.All(x => x);
+          return new CanPlaceShipHoverStatus(canBePlacedEntirely, boardHover);
+       }
+       
+       public struct CanPlaceShipHoverStatus
+       {
+          public readonly bool canBePlacedEntirely;
+          public readonly List<Player.HoverElement> boardHover;
+          
+          public CanPlaceShipHoverStatus(bool _canBePlacedEntirely, List<Player.HoverElement> _boardHover)
+          {
+             canBePlacedEntirely = _canBePlacedEntirely;
+             boardHover = _boardHover;
+          }
+       }
+       
+       private static CanPlaceShipData CanPlaceShipCommon(Rectangle rect, GameData gameData)
+       {
+          CanPlaceShipData canPlaceShipData = new CanPlaceShipData();
+          List<Point> hitboxRectAsPoints = rect.ToHitboxPoints(gameData.AllowedPlacementType);
+          Rectangle board = new Rectangle(0, 0, gameData.ActivePlayer.Board.GetWidth(), gameData.ActivePlayer.Board.GetHeight());
           foreach (var boundBoxPoint in hitboxRectAsPoints)
           {
              bool isPointInModelBox = rect.Contains(boundBoxPoint);
              bool isPointOutOfBounds = !board.Contains(boundBoxPoint);
-             if (isPointOutOfBounds && !isPointInModelBox)
-             {
-                continue;
-             }
-             bool doesHitBoxIntersect = ActivePlayer.Ships.Any(ship => ship.Contains(boundBoxPoint));
+             bool doesHitBoxIntersect = gameData.ActivePlayer.Ships.Any(ship => ship.Contains(boundBoxPoint));
              bool isPlaceable = !(isPointInModelBox && isPointOutOfBounds || doesHitBoxIntersect);
-             TileData.TileInfo tile;
-             if (isPlaceable)
-             {
-                tile = isPointInModelBox ? TileData.Ship : TileData.ImpossibleShipHitbox;
-             }
-             else
-             {
-                canBePlacedEntirely = false;
-                tile = TileData.ImpossibleShip;
-             }
-             ActivePlayer.BoardHover.Add(new Player.HoverElement(boundBoxPoint, tile.exponent));
-             if (isPointInModelBox)
-             {
-                modelPoints.Add(boundBoxPoint);
-             }
+             bool hitboxOutOfBounds = isPointOutOfBounds && !isPointInModelBox;
+             canPlaceShipData.Add(hitboxOutOfBounds, isPlaceable, isPointInModelBox, boundBoxPoint);
           }
-          DrawLogic.Message = canBePlacedEntirely ? "" : "Cannot place there!";
-          return canBePlacedEntirely;
+          return canPlaceShipData;
+       }
+       
+       private class CanPlaceShipData
+       {
+          public readonly List<bool> hitboxOutOfBounds;
+          public readonly List<bool> shipPointIsPlaceable;
+          public readonly List<bool> isPointInModelBox;
+          public readonly List<Point> Points;
+          
+          public CanPlaceShipData()
+          {
+             this.hitboxOutOfBounds = new List<bool>();
+             this.shipPointIsPlaceable = new List<bool>();
+             this.isPointInModelBox = new List<bool>();
+             this.Points = new List<Point>();
+          }
+
+          public void Add(bool _hitboxOutOfBounds, bool _shipPointIsPlaceable, bool _isPointInModelBox, Point _point)
+          {
+             this.hitboxOutOfBounds.Add(_hitboxOutOfBounds);
+             this.shipPointIsPlaceable.Add(_shipPointIsPlaceable);
+             this.isPointInModelBox.Add(_isPointInModelBox);
+             this.Points.Add(_point);
+          }
        }
 
 
-       private static void PlaceShip(List<Point> shipTiles, Rectangle rect)
+
+       private static void PlaceShip(List<Point> shipTiles, Rectangle rect, int [,] board, Player player, int maxShipCount, DrawLogicData drawLogicData)
        {
-          ActivePlayer.BoardHover = new List<Player.HoverElement>();
           foreach (var shipTile in shipTiles)
           {
-             GameMain.GetBoard().Set(shipTile, TileData.TileValue.Ship);
+             board.Set(shipTile, TileData.TileValue.Ship);
           }
-          TileFunctions.playerTileValue = TileData.SelectedTileRed.exponent; 
-          ActivePlayer.Ships.Add(rect);
-          ActivePlayer.ShipBeingPlacedIdx = ActivePlayer.ShipBeingPlacedIdx != ActivePlayer.Ships.Capacity - 1 ? 
-             ActivePlayer.ShipBeingPlacedIdx + 1 : -1;
+          drawLogicData.PlayerTileValue = TileData.SelectedTileRed.exponent; 
+          player.Ships.Add(rect);
+          player.ShipBeingPlacedIdx = player.ShipBeingPlacedIdx != maxShipCount - 1 ? 
+             player.ShipBeingPlacedIdx + 1 : -1;
           
        }
 
-       private static void HandleKeyboardPanning(double gameTime)
+       private void HandleKeyboardPanning(double gameTime, Player player)
        {
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.J))
+          if (Input.KeyDown[ConsoleKey.J])
           {
-             fOffsetX -= (float) (50 * gameTime);
+             player.fOffsetX -= (float) (50 * gameTime);
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.K))
+          if (Input.KeyDown[ConsoleKey.K])
           {
-             fOffsetY += (float) (50 * gameTime);
+             player.fOffsetY += (float) (50 * gameTime);
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.L))
+          if (Input.KeyDown[ConsoleKey.L])
           {
-             fOffsetX += (float) (50 * gameTime);
+             player.fOffsetX += (float) (50 * gameTime);
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.I))
+          if (Input.KeyDown[ConsoleKey.I])
           {
-             fOffsetY -= (float) (50 * gameTime);
+             player.fOffsetY -= (float) (50 * gameTime);
           }
        }
 
-       private static void HandleMousePanning()
+       private void HandleMousePanning(Player player)
        {
-          int x = GameMain.ConsoleEngine.GetMousePos().X;
-          int y = GameMain.ConsoleEngine.GetMousePos().Y;
-          if (x > 0 && x < GameMain.ScreenWidth && y > 0 && y < GameMain.ScreenHeight)
+          var input = Input.GetMousePos();
+          bool mouseLeftWasHeld = _mouseLeftIsHeld;
+          _mouseLeftIsHeld = Input.GetMouseLeft();
+          if (!mouseLeftWasHeld)
           {
-             if (GameMain.ConsoleEngine.GetMouseLeft() && !_mouseLeftIsHeld)
-             {
-                _fStartPanX = x;
-                _fStartPanY = y;
-                _mouseLeftIsHeld = true;
-             }
-
-             if (!GameMain.ConsoleEngine.GetMouseLeft())
-             {
-                _mouseLeftIsHeld = false;
-             }
-
-             if (GameMain.ConsoleEngine.GetMouseLeft())
-             {
-                fOffsetX -= (x - _fStartPanX) / ActivePlayer.fScaleX;
-                fOffsetY -= (y - _fStartPanY) / ActivePlayer.fScaleY;
-
-                _fStartPanX = x;
-                _fStartPanY = y;
-             }
+             _fStartPanX = input.X;
+             _fStartPanY = input.Y;
           }
+
+          if (!_mouseLeftIsHeld || !mouseLeftWasHeld)
+          {
+             return;
+          }
+          player.fOffsetX -= (input.X - _fStartPanX) / player.fScaleX;
+          player.fOffsetY -= (input.Y - _fStartPanY) / player.fScaleY;
+
+          _fStartPanX = input.X;
+          _fStartPanY = input.Y;
        }
 
-       private static void HandleZooming()
+       private void HandleZooming(Player player)
        {
+          bool zoomNegative = Input.KeyDown[ConsoleKey.OemMinus];
+          bool zoomPositive = Input.KeyDown[ConsoleKey.OemPlus];
+          if (! zoomNegative && ! zoomPositive)
+          {
+             return;
+          }
+          var mousePos = Input.GetMousePos();
           float fMouseWorldX_BeforeZoom, fMouseWorldY_BeforeZoom;
           ScreenToWorld(
-             GameMain.ConsoleEngine.GetMousePos().X,
-             GameMain.ConsoleEngine.GetMousePos().Y,
+             mousePos.X,
+             mousePos.Y,
+             player,
              out fMouseWorldX_BeforeZoom,
              out fMouseWorldY_BeforeZoom);
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.OemPlus))
+          if (zoomPositive)
           {
-             ActivePlayer.fScaleX *= 1.001f;
-             ActivePlayer.fScaleY *= 1.001f;
+             player.fScaleX *= 1.001f;
+             player.fScaleY *= 1.001f;
           }
 
-          if (GameMain.ConsoleEngine.GetKey(ConsoleKey.OemMinus))
+          if (zoomNegative)
           {
-             ActivePlayer.fScaleX *= 0.999f;
-             ActivePlayer.fScaleY *= 0.999f;
+             player.fScaleX *= 0.999f;
+             player.fScaleY *= 0.999f;
           }
 
           float fMouseWorldX_AfterZoom, fMouseWorldY_AfterZoom;
           ScreenToWorld(
-             GameMain.ConsoleEngine.GetMousePos().X,
-             GameMain.ConsoleEngine.GetMousePos().Y,
+             mousePos.X,
+             mousePos.Y,
+             player,
              out fMouseWorldX_AfterZoom,
              out fMouseWorldY_AfterZoom);
 
-          fOffsetX += fMouseWorldX_BeforeZoom - fMouseWorldX_AfterZoom;
-          fOffsetY += fMouseWorldY_BeforeZoom - fMouseWorldY_AfterZoom;
+          player.fOffsetX += fMouseWorldX_BeforeZoom - fMouseWorldX_AfterZoom;
+          player.fOffsetY += fMouseWorldY_BeforeZoom - fMouseWorldY_AfterZoom;
+       }
 
-          if (GameMain.ConsoleEngine.GetMouseLeft())
-          {
-             ActivePlayer.fSelectedTileX = (int) fMouseWorldX_AfterZoom;
-             ActivePlayer.fSelectedTileY = (int) fMouseWorldY_AfterZoom;
-          }
+       private void HandleMouseSelection(Player player)
+       {
+          if (!Input.GetMouseLeft()) return;
+          var mousePos = Input.GetMousePos();
+          float fMouseWorldX, fMouseWorldY;
+          ScreenToWorld(
+             mousePos.X,
+             mousePos.Y,
+             player,
+             out fMouseWorldX,
+             out fMouseWorldY);
+          player.fSelectedTileX = (float) Math.Floor(fMouseWorldX);
+          player.fSelectedTileY = (float) Math.Floor(fMouseWorldY);
        }
        
-       
-       private static void SetScreenOffset()
+       private static void SetScreenOffset(Player player)
        {
-          ActivePlayer.fOffsetX = (ActivePlayer.PPlayer.X - 4) * TileData.GetWidth();
-          ActivePlayer.fOffsetY = (ActivePlayer.PPlayer.Y - 4)* TileData.GetHeight();
+          player.fOffsetX = (player.PPlayer.X - 4) * TileData.GetWidth();
+          player.fOffsetY = (player.PPlayer.Y - 4)* TileData.GetHeight();
        }
     }
 }

@@ -16,20 +16,24 @@ This project is done for ICD0008 C# course the purpose of learning C#, databases
 - [Terminal.Gui/gui.cs](https://github.com/migueldeicaza/gui.cs)
 - [ConsoleGameEngine](https://github.com/ollelogdahl/ConsoleGameEngine)
 - [Packing algorithm](https://github.com/nickgravelyn/SpriteSheetPacker/tree/master/sspack)
+- [irrKlang](https://www.ambiera.com/irrklang/)
+- [RogueSharp](https://github.com/FaronBracy/RogueSharp)
+- [Troschuetz.Random](https://gitlab.com/pomma89/troschuetz-random)
 
 
 ## Sources on packing
 
-https://devel.nuclex.org/framework/wiki/RectanglePacking
-https://www.codeproject.com/Articles/210979/Fast-optimizing-rectangle-packing-algorithm-for-bu
-https://www.flipcode.com/archives/
-https://github.com/am11/RectanglePacker
-https://github.com/UnterrainerInformatik/collisiongrid
+- https://devel.nuclex.org/framework/wiki/RectanglePacking
+- https://www.codeproject.com/Articles/210979/Fast-optimizing-rectangle-packing-algorithm-for-bu
+- https://www.flipcode.com/archives/
+- https://github.com/am11/RectanglePacker
+- https://github.com/UnterrainerInformatik/collisiongrid
 
 ## Interesting things
 
 - https://www.gridsagegames.com/rexpaint/
 - https://en.wikipedia.org/wiki/Code_page_775
+- web font [Press Start 2P](https://fonts.google.com/specimen/Press+Start+2P?query=press&sidebar.open=true&selection.family=Press+Start+2P)
 
 <!--
 ##Notes

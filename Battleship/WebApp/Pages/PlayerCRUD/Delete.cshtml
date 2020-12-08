@@ -1,0 +1,112 @@
+@page
+@model WebApp.Pages_PlayerCRUD.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>DbPlayerDTO</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShipsDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.ShipsDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.BoardDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.BoardDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.PPlayerDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.PPlayerDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShootingHistoryDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.ShootingHistoryDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShipBeingPlacedIdx)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.ShipBeingPlacedIdx)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.PlayerType)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.PlayerType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fOffsetY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fOffsetY)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fOffsetX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fOffsetX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fScaleX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fScaleX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fScaleY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fScaleY)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fSelectedTileX)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fSelectedTileX)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbPlayerDTO.fSelectedTileY)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbPlayerDTO.fSelectedTileY)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="DbPlayerDTO.ID" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-page="./Index">Back to List</a>
+    </form>
+</div>

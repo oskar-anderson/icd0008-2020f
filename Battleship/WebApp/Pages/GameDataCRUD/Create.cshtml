@@ -1,0 +1,77 @@
+@page
+@model WebApp.Pages_GameDataCRUD.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>DbGameData</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="DbGameData.ID" class="control-label"></label>
+                <input asp-for="DbGameData.ID" class="form-control" />
+                <span asp-validation-for="DbGameData.ID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.Name" class="control-label"></label>
+                <input asp-for="DbGameData.Name" class="form-control" />
+                <span asp-validation-for="DbGameData.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.DateCreated" class="control-label"></label>
+                <input asp-for="DbGameData.DateCreated" class="form-control" />
+                <span asp-validation-for="DbGameData.DateCreated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.ActivePlayerID" class="control-label"></label>
+                <select asp-for="DbGameData.ActivePlayerID" class ="form-control" asp-items="ViewBag.ActivePlayerID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.InactivePlayerID" class="control-label"></label>
+                <select asp-for="DbGameData.InactivePlayerID" class ="form-control" asp-items="ViewBag.InactivePlayerID"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.AllowedPlacementType" class="control-label"></label>
+                <input asp-for="DbGameData.AllowedPlacementType" class="form-control" />
+                <span asp-validation-for="DbGameData.AllowedPlacementType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.ShipSizesDbFriendly" class="control-label"></label>
+                <input asp-for="DbGameData.ShipSizesDbFriendly" class="form-control" />
+                <span asp-validation-for="DbGameData.ShipSizesDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.Phase" class="control-label"></label>
+                <input asp-for="DbGameData.Phase" class="form-control" />
+                <span asp-validation-for="DbGameData.Phase" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.WinningPlayer" class="control-label"></label>
+                <input asp-for="DbGameData.WinningPlayer" class="form-control" />
+                <span asp-validation-for="DbGameData.WinningPlayer" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.FrameCount" class="control-label"></label>
+                <input asp-for="DbGameData.FrameCount" class="form-control" />
+                <span asp-validation-for="DbGameData.FrameCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

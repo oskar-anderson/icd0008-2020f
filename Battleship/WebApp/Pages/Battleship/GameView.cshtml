@@ -1,0 +1,166 @@
+﻿@page
+@using Game
+@using Game.Tile
+@model WebApp.Pages.Battleship.GameView
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <title>Battleship</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet"> 
+</head>
+<style>
+</style>
+<body>
+<h2>Battleship</h2>
+
+@{
+    if (Model.GameData.WinningPlayer == null)
+    {
+        <h3>@Model.GameData.ActivePlayer.Name turn</h3>
+    }
+    else
+    {
+        <h3>Game Over! @Model.GameData.WinningPlayer Won!</h3>
+        <p style="text-align: center">
+            <a asp-page="NewGame">Try Again</a>
+        </p>
+    }
+}
+<form method="post">
+    <div class="container">
+        <div class="row">
+            <div class="col capsizedText PressStart2PFont" style="font-size: 16px; line-height: 16px; padding: 0;">
+                @{
+                    <!-- This is stupid, but it works! https://stackoverflow.com/questions/5078239/how-do-i-remove-the-space-between-inline-inline-block-elements -->
+                    @for (int y = 0; y < Model.GameBoard.GetLength(0); y++)
+                    {
+                        <p style="display: flex; margin-top: 0; margin-bottom: 0;">
+                            @for (int x = 0; x < Model.GameBoard.GetLength(1); x++)
+                            {
+                                TileData.CharInfo charInfo = Model.GameBoard[y, x];
+                                string colCss = Model.ColorIntToCssString[charInfo.GetColor()];
+                                string character = charInfo.GetGlyphString();
+                                character = character == " " ? "." : character;
+                                <em style="color: @colCss;">@character</em>
+                            }
+                        </p>
+                    }
+                }
+            </div>
+            <div class="col-md-auto container">
+                <div style="display: none; position: fixed">
+                    <input type="radio" id="UP" name="KeyPress" value="UP"/>
+                    <input type="radio" id="DOWN" name="KeyPress" value="DOWN"/>
+                    <input type="radio" id="LEFT" name="KeyPress" value="LEFT"/>
+                    <input type="radio" id="RIGHT" name="KeyPress" value="RIGHT"/>
+        
+                    <input type="radio" id="Z" name="KeyPress" value="Z"/>
+                    <input type="radio" id="X" name="KeyPress" value="X"/>
+        
+                    <input type="radio" id="d1" name="KeyPress" value="d1"/>
+                    <input type="radio" id="d2" name="KeyPress" value="d2"/>
+                    <input type="radio" id="d3" name="KeyPress" value="d3"/>
+                </div>
+
+
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col">
+                        <input type="submit" style="width: 100%;" onclick="checkRadioWithId('UP')" value="W"/>
+                    </div>
+                    <div class="col"></div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <input type="submit" style="width: 100%;" onclick="checkRadioWithId('LEFT')" value="A"/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" style="width: 100%;" onclick="checkRadioWithId('DOWN')" value="S"/>
+                    </div>
+                    <div class="col">
+                        <input type="submit" style="width: 100%;" onclick="checkRadioWithId('RIGHT')" value="D"/>
+                    </div>
+                </div>
+                <br/>
+                @{
+                    UpdateLogic.ShipPlacementStatus shipPlacementStatus = UpdateLogic.GetShipPlacementStatus(Model.GameData);
+                    if (Model.GameData.Phase == 1 && shipPlacementStatus.isPlaceable || Model.GameData.Phase == 2)
+                    {
+                        <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('Z')" value="Z"/>
+                    }
+                    else
+                    {
+                        <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('Z')" value="Z"/>
+                    }
+                    if (Model.GameData.Phase == 1)
+                    {
+                        <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('X')" value="Rotate"/>
+                    }
+
+                    if (Model.GameData.Phase == 1)
+                    {
+                        if (Model.GameData.ActivePlayer.IsViewingOwnBoard)
+                        {
+                            <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d1')" value="Randomize"/>
+                            <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d2')" value="Clear"/>
+                        }
+                        else
+                        {
+                            <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d1')" value="Randomize"/>
+                            <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d2')" value="Clear"/>
+                        }
+                    }
+
+                    if (Model.GameData.Phase == 1)
+                    {
+                        if (shipPlacementStatus.isStartable)
+                        {
+                            <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d3')" value="Start"/>
+                        }
+                        else
+                        {
+                            <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d3')" value="Start"/>
+                        }
+                    }
+                }
+            </div>
+        </div>
+    </div>
+    <br/>
+    <br/>
+    <button type="button" onclick="displayToggle('hiddenData')">Debug</button>
+    <div id="hiddenData" style="display: none">
+        <div>
+            <input asp-for="GameDataSerialized" value="@Model.GameDataSerialized"/>
+            <input asp-for="FormActionSave" type="checkbox" />
+        </div>
+        <code style="white-space: pre-wrap;">@Model.GameDataSerialized</code>
+    </div>
+    <button type="submit" onclick="checkCheckboxWithId('@nameof(Model.FormActionSave)')">Save</button>
+</form>
+
+</body>
+</html>
+<script>
+
+function checkRadioWithId(id) {
+  document.getElementById(id).checked = true;
+}
+
+function checkCheckboxWithId(id) {
+  document.getElementById(id).checked = true;
+}
+
+function displayToggle(id) {
+  var x = document.getElementById(id);
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+</script>

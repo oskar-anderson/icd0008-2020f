@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net472" Version="1.0.0" />
+      <PackageReference Include="NUnit" Version="3.12.0" />
       <PackageReference Include="RogueSharp" Version="4.2.0" />
       <PackageReference Include="Troschuetz.Random" Version="5.0.1" />
     </ItemGroup>

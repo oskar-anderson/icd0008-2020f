@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using Domain;
 using Troschuetz.Random.Generators;
 using Rectangle = RogueSharp.Rectangle;
 using Point = RogueSharp.Point;

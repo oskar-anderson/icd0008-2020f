@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using ConsoleApp.TerminalGuiPlus;
+using Domain;
 using RogueSharp;
 using Terminal.Gui;
 using static ConsoleApp.GameMenu.ColorSchemeHolder;
@@ -207,7 +208,7 @@ namespace ConsoleApp.GameMenu
 			};
 
 			var tf1Description = new Label("Ship sizes") {X = 3, Y = Pos.Top(radioGroup) + radioGroup.RadioLabels.Length };
-			TextField tf1 = new TextField("1x5:1; 1x4:2; 1x3:3; 1x2:4")
+			TextField tf1 = new TextField("1x5N1; 1x4N2; 1x3N3; 1x2N4")
 			{
 				X = 20,
 				Y = Pos.Top(radioGroup) + radioGroup.RadioLabels.Length,
@@ -223,11 +224,13 @@ namespace ConsoleApp.GameMenu
 				{
 					if (! Int32.TryParse(slider1.Indicator.Text.ToString(), out var w)) { throw new Exception("parse failed");}
 					if (! Int32.TryParse(slider2.Indicator.Text.ToString(), out var h)) { throw new Exception("parse failed");}
-					string errorMsgText = errorMsg.Text.ToString()!;
+					string errorMsgText = "";
 					string shipsToParse = tf1.Text.ToString()!;
 
-					if (TryBtnStart(shipsToParse, w, h, radioGroup.SelectedItem, ref errorMsgText))
+					RuleSet? menuResult;
+					if (Game.Utils.TryBtnStart(shipsToParse, w, h, radioGroup.SelectedItem, ref errorMsgText, out menuResult))
 					{
+						ruleSetHolder = menuResult!;
 						Application.RequestStop();
 					}
 					else
@@ -322,83 +325,6 @@ namespace ConsoleApp.GameMenu
 			return result.ToArray();
 		}
 
-		private static bool TryBtnStart(string shipsToParse, int w, int h, int selectedItem, ref string errorMsg)
-		{
-			String[] ships = shipsToParse.ToLower().Trim(';').Replace(" ", "").Split(';');
-			List<Point> shipList = new List<Point>();
-			foreach (var ship in ships)
-			{
-				StringBuilder sb1 = new StringBuilder();
-				StringBuilder sb2 = new StringBuilder();
-				StringBuilder sb3 = new StringBuilder();
-				int track = 0;
-				foreach (var cShip in ship)
-				{
-					switch (track)
-					{
-						case 0 when "012345679".Contains(cShip):
-							sb1.Append(cShip);
-							break;
-						case 0 when cShip == 'x':
-							track = 1;
-							break;
-						case 1 when "012345679".Contains(cShip):
-							sb2.Append(cShip);
-							break;
-						case 1 when cShip == ':':
-							track = 2;
-							break;
-						case 2 when "012345679".Contains(cShip):
-							sb3.Append(cShip);
-							break;
-						default:
-							errorMsg = "Parsing failed!";
-							return false;
-					}
-				}
-
-				int x;
-				int y;
-				int times;
-				try
-				{
-					x = Math.Abs(int.Parse(sb1.ToString()));
-					y = Math.Abs(int.Parse(sb2.ToString()));
-					times = Math.Abs(int.Parse(sb3.ToString()));
-				}
-				catch (Exception)
-				{
-					errorMsg = "Parsing failed!";
-					return false;
-				}
-				if (x == 0 || y == 0)
-				{
-					errorMsg = "Ship with size (0, 0)";
-					return false;
-				} 
-				
-				for (int i = 0; i < times; i++)
-				{
-					shipList.Add(new Point(x, y));
-				}
-
-				if (! Game.Pack.ShipPlacement.TryPackShip(shipList, w, h, selectedItem, out _))
-				{
-					errorMsg = "Will not fit!";
-					return false;
-				}
-			}
-			ruleSetHolder = new RuleSet()
-			{
-				BoardWidth = w,
-				BoardHeight = h,
-				AllowedPlacementType = selectedItem,
-				Ships = shipList,
-				ExitCode = ExitResult.Start
-			};
-			return true;
-		}
-			
 		private static void AddAndExec(MenuAction menuAction)
 		{
 			MenuViewLevel.Add(menuAction);

@@ -2,6 +2,7 @@
 using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DAL.Migrations
@@ -13,47 +14,53 @@ namespace DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9");
+                .HasAnnotation("ProductVersion", "3.1.9")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("DAL.DbGameData", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(36)")
+                        .HasMaxLength(36);
 
                     b.Property<string>("ActivePlayerID")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<int>("AllowedPlacementType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("BoardHeight")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("BoardWidth")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("DateCreated")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("FrameCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("InactivePlayerID")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Phase")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("ShipSizesDbFriendly")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WinningPlayer")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
 
@@ -61,63 +68,64 @@ namespace DAL.Migrations
 
                     b.HasIndex("InactivePlayerID");
 
-                    b.ToTable("StateSave");
+                    b.ToTable("GameData");
                 });
 
             modelBuilder.Entity("DAL.DbPlayerDTO", b =>
                 {
                     b.Property<string>("ID")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(36)")
+                        .HasMaxLength(36);
 
                     b.Property<string>("BoardDbFriendly")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsHorizontalPlacement")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsViewingOwnBoard")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PPlayerDbFriendly")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PlayerType")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<int>("ShipBeingPlacedIdx")
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("ShipsDbFriendly")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ShootingHistoryDbFriendly")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<float>("fOffsetX")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.Property<float>("fOffsetY")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.Property<float>("fScaleX")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.Property<float>("fScaleY")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.Property<float>("fSelectedTileX")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.Property<float>("fSelectedTileY")
-                        .HasColumnType("REAL");
+                        .HasColumnType("real");
 
                     b.HasKey("ID");
 
@@ -129,13 +137,13 @@ namespace DAL.Migrations
                     b.HasOne("DAL.DbPlayerDTO", "ActivePlayer")
                         .WithMany()
                         .HasForeignKey("ActivePlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("DAL.DbPlayerDTO", "InactivePlayer")
                         .WithMany()
                         .HasForeignKey("InactivePlayerID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

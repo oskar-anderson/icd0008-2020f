@@ -1,0 +1,65 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <PlatformTarget>x64</PlatformTarget>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.9" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.9" />
+        <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DAL\DAL.csproj" />
+        <Reference Include="irrKlang.NET4">
+            <HintPath>..\Vendor\irrKlang-64bit-1.6.0\bin\dotnet-4-64\irrKlang.NET4.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\font\PressStart2P" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\GameData\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameData\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameData\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameData\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameData\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Player\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Player\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Player\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Player\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\Player\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Index.cshtml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Pages\PlayerCRUD\Create.cshtml" />
+      <UpToDateCheckInput Remove="Pages\PlayerCRUD\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Pages\PlayerCRUD\Details.cshtml" />
+      <UpToDateCheckInput Remove="Pages\PlayerCRUD\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Pages\PlayerCRUD\Index.cshtml" />
+      <UpToDateCheckInput Remove="Pages\GameDataCRUD\Create.cshtml" />
+      <UpToDateCheckInput Remove="Pages\GameDataCRUD\Delete.cshtml" />
+      <UpToDateCheckInput Remove="Pages\GameDataCRUD\Details.cshtml" />
+      <UpToDateCheckInput Remove="Pages\GameDataCRUD\Edit.cshtml" />
+      <UpToDateCheckInput Remove="Pages\GameDataCRUD\Index.cshtml" />
+    </ItemGroup>
+    
+</Project>

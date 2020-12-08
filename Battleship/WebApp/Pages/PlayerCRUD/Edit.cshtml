@@ -1,0 +1,105 @@
+@page
+@model WebApp.Pages_PlayerCRUD.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>DbPlayerDTO</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="DbPlayerDTO.ID" />
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.ShipsDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.ShipsDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.ShipsDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.BoardDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.BoardDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.BoardDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.PPlayerDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.PPlayerDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.PPlayerDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.ShipBeingPlacedIdx" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.ShipBeingPlacedIdx" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.ShipBeingPlacedIdx" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DbPlayerDTO.IsViewingOwnBoard" /> @Html.DisplayNameFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="DbPlayerDTO.IsHorizontalPlacement" /> @Html.DisplayNameFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.Name" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.Name" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.PlayerType" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.PlayerType" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.PlayerType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fOffsetY" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fOffsetY" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fOffsetY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fOffsetX" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fOffsetX" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fOffsetX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fScaleX" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fScaleX" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fScaleX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fScaleY" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fScaleY" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fScaleY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fSelectedTileX" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fSelectedTileX" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fSelectedTileX" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbPlayerDTO.fSelectedTileY" class="control-label"></label>
+                <input asp-for="DbPlayerDTO.fSelectedTileY" class="form-control" />
+                <span asp-validation-for="DbPlayerDTO.fSelectedTileY" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

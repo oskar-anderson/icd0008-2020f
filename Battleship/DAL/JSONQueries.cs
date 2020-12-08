@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using Domain.Model;
 using Game;
-using Game.Model;
 
 namespace DAL
 {
     public static class DataManager
     {
-        public static bool LoadGameAction(out Game.Model.GameData? data)
+        public static bool LoadGameAction(out GameData? data)
         {
             List<string> files = System.IO.Directory.EnumerateFiles(".", "*.json").ToList();
             files = files.Select(f => f.Remove(0, 2)).ToList();

@@ -68,7 +68,7 @@ namespace ConsoleApp
             while (true)
             {
                 // clear input buffer
-                // https://stackoverflow.com/questions/3769770/clear-console-buffer - parameter is opposite. Has changed???
+                // https://stackoverflow.com/questions/3769770/clear-console-buffer
                 while(Console.KeyAvailable) 
                 {
                     Console.ReadKey(true);
