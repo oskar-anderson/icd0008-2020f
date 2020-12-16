@@ -13,99 +13,93 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShipsDbFriendly)
+            @Html.DisplayNameFor(model => model.DbPlayer.ShipsDbFriendly)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.ShipsDbFriendly)
+            @Html.DisplayFor(model => model.DbPlayer.ShipsDbFriendly)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.BoardDbFriendly)
+            @Html.DisplayNameFor(model => model.DbPlayer.ShootingHistoryDbFriendly)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.BoardDbFriendly)
+            @Html.DisplayFor(model => model.DbPlayer.ShootingHistoryDbFriendly)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.PPlayerDbFriendly)
+            @Html.DisplayNameFor(model => model.DbPlayer.SpriteDbFriendly)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.PPlayerDbFriendly)
+            @Html.DisplayFor(model => model.DbPlayer.SpriteDbFriendly)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShootingHistoryDbFriendly)
+            @Html.DisplayNameFor(model => model.DbPlayer.BoardBoundsDbFriendly)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.ShootingHistoryDbFriendly)
+            @Html.DisplayFor(model => model.DbPlayer.BoardBoundsDbFriendly)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.ShipBeingPlacedIdx)
+            @Html.DisplayNameFor(model => model.DbPlayer.ShipBeingPlacedIdx)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.ShipBeingPlacedIdx)
+            @Html.DisplayFor(model => model.DbPlayer.ShipBeingPlacedIdx)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
+            @Html.DisplayNameFor(model => model.DbPlayer.IsHorizontalPlacement)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
+            @Html.DisplayFor(model => model.DbPlayer.IsHorizontalPlacement)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+            @Html.DisplayNameFor(model => model.DbPlayer.Name)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+            @Html.DisplayFor(model => model.DbPlayer.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.Name)
+            @Html.DisplayNameFor(model => model.DbPlayer.PlayerType)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.Name)
+            @Html.DisplayFor(model => model.DbPlayer.PlayerType)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.PlayerType)
+            @Html.DisplayNameFor(model => model.DbPlayer.fCameraPixelPosY)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.PlayerType)
+            @Html.DisplayFor(model => model.DbPlayer.fCameraPixelPosY)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fOffsetY)
+            @Html.DisplayNameFor(model => model.DbPlayer.fCameraPixelPosX)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fOffsetY)
+            @Html.DisplayFor(model => model.DbPlayer.fCameraPixelPosX)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fOffsetX)
+            @Html.DisplayNameFor(model => model.DbPlayer.fCameraScaleX)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fOffsetX)
+            @Html.DisplayFor(model => model.DbPlayer.fCameraScaleX)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fScaleX)
+            @Html.DisplayNameFor(model => model.DbPlayer.fCameraScaleY)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fScaleX)
+            @Html.DisplayFor(model => model.DbPlayer.fCameraScaleY)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fScaleY)
+            @Html.DisplayNameFor(model => model.DbPlayer.fMouseSelectedTileX)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fScaleY)
+            @Html.DisplayFor(model => model.DbPlayer.fMouseSelectedTileX)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fSelectedTileX)
+            @Html.DisplayNameFor(model => model.DbPlayer.fMouseSelectedTileY)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fSelectedTileX)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbPlayerDTO.fSelectedTileY)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbPlayerDTO.fSelectedTileY)
+            @Html.DisplayFor(model => model.DbPlayer.fMouseSelectedTileY)
         </dd>
     </dl>
     
     <form method="post">
-        <input type="hidden" asp-for="DbPlayerDTO.ID" />
+        <input type="hidden" asp-for="DbPlayer.ID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-page="./Index">Back to List</a>
     </form>

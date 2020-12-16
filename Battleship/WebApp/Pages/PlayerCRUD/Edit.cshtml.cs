@@ -20,7 +20,7 @@ namespace WebApp.Pages_PlayerCRUD
         }
 
         [BindProperty]
-        public DbPlayerDTO DbPlayerDTO { get; set; } = null!;
+        public DbPlayer DbPlayer { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -29,9 +29,9 @@ namespace WebApp.Pages_PlayerCRUD
                 return NotFound();
             }
 
-            DbPlayerDTO = await _context.Player.FirstOrDefaultAsync(m => m.ID == id);
+            DbPlayer = await _context.Player.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (DbPlayerDTO == null)
+            if (DbPlayer == null)
             {
                 return NotFound();
             }
@@ -47,7 +47,7 @@ namespace WebApp.Pages_PlayerCRUD
                 return Page();
             }
 
-            _context.Attach(DbPlayerDTO).State = EntityState.Modified;
+            _context.Attach(DbPlayer).State = EntityState.Modified;
 
             try
             {
@@ -55,7 +55,7 @@ namespace WebApp.Pages_PlayerCRUD
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!DbPlayerDTOExists(DbPlayerDTO.ID))
+                if (!DbPlayerDTOExists(DbPlayer.ID))
                 {
                     return NotFound();
                 }

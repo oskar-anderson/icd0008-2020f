@@ -47,6 +47,11 @@
       <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Details.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Edit.cshtml" />
       <_ContentIncludedByDefault Remove="Pages\PlayerCRUD\Index.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD2\Create.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD2\Delete.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD2\Details.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD2\Edit.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\GameDataCRUD2\Index.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

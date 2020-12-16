@@ -1,6 +1,7 @@
 ﻿@page
+@using Domain.Model
+@using Domain.Tile
 @using Game
-@using Game.Tile
 @model WebApp.Pages.Battleship.GameView
 
 <!DOCTYPE html>
@@ -18,13 +19,14 @@
 <h2>Battleship</h2>
 
 @{
-    if (Model.GameData.WinningPlayer == null)
+    if (Model.GameData.State != GameState.GameOver)
     {
         <h3>@Model.GameData.ActivePlayer.Name turn</h3>
     }
     else
     {
-        <h3>Game Over! @Model.GameData.WinningPlayer Won!</h3>
+        UpdateLogic.IsOver(Model.GameData, out string winner);
+        <h3>Game Over! @winner Won!</h3>
         <p style="text-align: center">
             <a asp-page="NewGame">Try Again</a>
         </p>
@@ -64,6 +66,8 @@
                     <input type="radio" id="d1" name="KeyPress" value="d1"/>
                     <input type="radio" id="d2" name="KeyPress" value="d2"/>
                     <input type="radio" id="d3" name="KeyPress" value="d3"/>
+                    
+                    <input type="radio" id="takeBack" name="KeyPress" value="takeBack"/>
                 </div>
 
 
@@ -88,7 +92,7 @@
                 <br/>
                 @{
                     UpdateLogic.ShipPlacementStatus shipPlacementStatus = UpdateLogic.GetShipPlacementStatus(Model.GameData);
-                    if (Model.GameData.Phase == 1 && shipPlacementStatus.isPlaceable || Model.GameData.Phase == 2)
+                    if (Model.GameData.State == GameState.Placement && shipPlacementStatus.isPlaceable || Model.GameData.State == GameState.Shooting)
                     {
                         <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('Z')" value="Z"/>
                     }
@@ -96,26 +100,18 @@
                     {
                         <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('Z')" value="Z"/>
                     }
-                    if (Model.GameData.Phase == 1)
+                    if (Model.GameData.State == GameState.Placement)
                     {
                         <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('X')" value="Rotate"/>
                     }
 
-                    if (Model.GameData.Phase == 1)
+                    if (Model.GameData.State == GameState.Placement)
                     {
-                        if (Model.GameData.ActivePlayer.IsViewingOwnBoard)
-                        {
-                            <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d1')" value="Randomize"/>
-                            <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d2')" value="Clear"/>
-                        }
-                        else
-                        {
-                            <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d1')" value="Randomize"/>
-                            <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d2')" value="Clear"/>
-                        }
+                        <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d1')" value="Randomize"/>
+                        <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('d2')" value="Clear"/>
                     }
 
-                    if (Model.GameData.Phase == 1)
+                    if (Model.GameData.State == GameState.Placement)
                     {
                         if (shipPlacementStatus.isStartable)
                         {
@@ -125,6 +121,11 @@
                         {
                             <input class="col" type="submit" style="width: 100%;" disabled="disabled" onclick="checkRadioWithId('d3')" value="Start"/>
                         }
+                    }
+                    
+                    if (Model.GameData.State == GameState.Shooting)
+                    {
+                        <input class="col" type="submit" style="width: 100%;" onclick="checkRadioWithId('takeBack')" value="takeBack"/>
                     }
                 }
             </div>

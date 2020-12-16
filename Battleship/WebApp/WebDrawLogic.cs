@@ -2,15 +2,23 @@
 using System.Collections.Generic;
 using Domain;
 using Domain.Model;
+using Domain.Tile;
 using Game;
-using Game.Tile;
 using RogueSharp;
 
 namespace WebApp
 {
     public static class WebDrawLogic
     {
-        public static int[,] Draw(double gameTime, GameData gameData, DrawLogicData drawLogicData)
+        public static TileData.CharInfo[,] GetDraw(GameData gameData)
+        {
+            gameData.FrameCount++;
+            
+            TileData.CharInfo[,] map = new TileData.CharInfo[40, 40];
+            BaseDraw.GetDrawArea(gameData, ref map);
+            return map;
+        }
+        public static string[,] Draw(double gameTime, GameData gameData)
         {
             gameData.FrameCount++;
 
@@ -18,26 +26,26 @@ namespace WebApp
             UpdateLogic.ScreenToWorld(
                 0, 0,
                 1, 1,
-                gameData.ActivePlayer.fOffsetX, gameData.ActivePlayer.fOffsetY,
+                gameData.ActivePlayer.fCameraPixelPosX, gameData.ActivePlayer.fCameraPixelPosY,
                 out fScreenLeft, out fScreenTop);
             UpdateLogic.ScreenToWorld(
-                10 * TileData.GetWidth(), 10 * TileData.GetHeight(),
+                10 * TileData.Width, 10 * TileData.Height,
                 1, 1,
-                gameData.ActivePlayer.fOffsetX, gameData.ActivePlayer.fOffsetY,
+                gameData.ActivePlayer.fCameraPixelPosX, gameData.ActivePlayer.fCameraPixelPosY,
                 out fScreenRight, out fScreenBottom);
 
             int tilesDrawn = 0;
 
-            int[,] worldTileValue = new int[gameData.ActivePlayer.Board.GetHeight(), gameData.ActivePlayer.Board.GetWidth()];
+            string[,] worldTileValue = new string[gameData.Board2D.GetHeight(), gameData.Board2D.GetWidth()];
             Point offset = new Point((int) fScreenLeft / 4, (int) fScreenTop / 4);
-            List<Point> board = new Rectangle(offset.X, offset.Y, gameData.ActivePlayer.Board.GetWidth(), gameData.ActivePlayer.Board.GetHeight()).ToPoints();
+            List<Point> board = new Rectangle(offset.X, offset.Y, gameData.ActivePlayer.BoardBounds.Right, gameData.ActivePlayer.BoardBounds.Bottom).ToPoints();
             foreach (var point in board)
             {
-                int tileExponent;
-                if (new Rectangle(0, 0, gameData.ActivePlayer.Board.GetWidth(), gameData.ActivePlayer.Board.GetHeight()).Contains(point))
+                string tileExponent;
+                if (gameData.ActivePlayer.BoardBounds.Contains(point))
                 {
-                    tileExponent = BaseBattleship.GetBoard(gameData).Get(point);
-                    if (gameData.Phase == 2 && tileExponent == TileData.Ship.exponent)
+                    tileExponent = gameData.Board2D.Get(point);
+                    if (gameData.State == GameState.Shooting && tileExponent == TextureValue.IntactShip)
                     {
                         tileExponent = TileFunctions.GetSeaTile(point.GetIndex());
                     }
@@ -45,7 +53,7 @@ namespace WebApp
                     
                 else
                 {
-                    tileExponent = TileData.VoidTile.exponent;
+                    tileExponent = TextureValue.VoidTile;
                 }
 
                 bool isGood = GetTileValueToDrawToBoard(point, offset, tileExponent, fScreenRight, fScreenBottom, fScreenTop,
@@ -60,8 +68,8 @@ namespace WebApp
             Rectangle bound = new Rectangle(
                 0 + offset.X, 
                 0 + offset.Y, 
-                gameData.ActivePlayer.Board.GetWidth(),
-                gameData.ActivePlayer.Board.GetHeight());
+                gameData.ActivePlayer.BoardBounds.Right,
+                gameData.ActivePlayer.BoardBounds.Bottom);
 /*
                 foreach (Player.HoverElement hoverTile in gameData.ActivePlayer.BoardHover)
                 {
@@ -79,7 +87,7 @@ namespace WebApp
             }
             */
             
-            bool playerIsGood = GetTileValueToDrawToBoard(gameData.ActivePlayer.PPlayer, offset, drawLogicData.PlayerTileValue, fScreenRight, fScreenBottom, fScreenTop, fScreenLeft, ref worldTileValue);
+            bool playerIsGood = GetTileValueToDrawToBoard(gameData.ActivePlayer.Sprite.Pos, offset, gameData.ActivePlayer.Sprite.Texture, fScreenRight, fScreenBottom, fScreenTop, fScreenLeft, ref worldTileValue);
 
             if (playerIsGood)
             {
@@ -89,16 +97,16 @@ namespace WebApp
             return worldTileValue;
         }
         
-        public static bool GetTileValueToDrawToBoard(Point drawPoint, Point offSetPoint, int tileExponent, 
-            float fScreenRight, float fScreenbottom, float fScreenTop, float fScreenLeft, ref int[,] result)
+        public static bool GetTileValueToDrawToBoard(Point drawPoint, Point offSetPoint, string tileExponent, 
+            float fScreenRight, float fScreenbottom, float fScreenTop, float fScreenLeft, ref string[,] result)
         {
-            int worldX = drawPoint.X * TileData.GetWidth();
-            int worldY = drawPoint.Y * TileData.GetHeight();
+            int worldX = drawPoint.X * TileData.Width;
+            int worldY = drawPoint.Y * TileData.Height;
 
             if (fScreenRight < worldX ||
                 fScreenbottom < worldY ||
-                fScreenTop > worldY + TileData.GetHeight() - 1 ||
-                fScreenLeft > worldX + TileData.GetWidth() - 1)
+                fScreenTop > worldY + TileData.Height - 1 ||
+                fScreenLeft > worldX + TileData.Width - 1)
             {
                 return false;
             }
@@ -107,11 +115,11 @@ namespace WebApp
             return true;
         }
 
-        public static void GetTileValueToTileData(Point drawPoint, int tileExponent, ref TileData.CharInfo[,] result)
+        public static void GetTileValueToTileData(Point drawPoint, string tileExponent, ref TileData.CharInfo[,] result)
         {
-            TileData.CharInfo[] tile = TileFunctions.GetTile(tileExponent);
-            int worldX = drawPoint.X * TileData.GetWidth();
-            int worldY = drawPoint.Y * TileData.GetHeight();
+            TileData.CharInfo[] tile = TileFunctions.GetTile(tileExponent).CharInfoArray;
+            int worldX = drawPoint.X * TileData.Width;
+            int worldY = drawPoint.Y * TileData.Height;
                     
             int tile_sx, tile_sy;
             UpdateLogic.WorldToScreen(worldX, worldY,
@@ -119,11 +127,11 @@ namespace WebApp
                 0, 0,  
                 out tile_sx, out tile_sy);
             
-            for (int i = 0; i < TileData.GetHeight(); i++)
+            for (int i = 0; i < TileData.Height; i++)
             {
-                for (int j = 0; j < TileData.GetWidth(); j++)
+                for (int j = 0; j < TileData.Width; j++)
                 {
-                    TileData.CharInfo charInfo = tile[i * TileData.GetHeight() + j];
+                    TileData.CharInfo charInfo = tile[i * TileData.Height + j];
                     Point point = new Point(tile_sx + j, + tile_sy + i);
                     result.Set(point, charInfo);
                 }

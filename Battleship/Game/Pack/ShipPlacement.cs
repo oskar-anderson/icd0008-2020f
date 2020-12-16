@@ -11,7 +11,7 @@ namespace Game.Pack
 {
     public static class ShipPlacement
     {
-        public static List<Rectangle> PlaceShips(List<Point> shipsSizesToPlaceOrig, int x, int y, int placementType)
+        public static List<Rectangle> PlaceShips(List<Point> shipsSizesToPlaceOrig, Rectangle bounds, int placementType)
         {
             if (! new int[] {0, 1, 2}.Contains(placementType))
             {
@@ -21,7 +21,7 @@ namespace Game.Pack
             shipsSizesToPlace = shipsSizesToPlace.OrderByDescending(r => r.X * r.Y).ToList();
             RandomizeRot(shipsSizesToPlace);
             List<Rectangle> packedRects;
-            bool isPacked = TryPackShip(shipsSizesToPlace, x, y, placementType, out packedRects);
+            bool isPacked = TryPackShip(shipsSizesToPlace, bounds.Width, bounds.Height, placementType, out packedRects);
             if (!isPacked)
             {
                 throw new Exception("Packing failed, unable to place ships");
@@ -37,7 +37,7 @@ namespace Game.Pack
                     for (int unusedAttemptJ = 0; unusedAttemptJ < 10; unusedAttemptJ++)
                     {
                         Rectangle rectToPlace = new Rectangle(
-                            RandomGen(x - rectTmp.Width + 1), RandomGen(y - rectTmp.Height + 1),
+                            RandomGen(bounds.Width - rectTmp.Width + 1), RandomGen(bounds.Height - rectTmp.Height + 1),
                             rectTmp.Width, rectTmp.Height);
                         List<Point> rectToPlacePoints = rectToPlace.ToHitboxPoints(placementType);
                         bool anyIntersects = PlacedShipsIntersectToPlace(placedShipsShuffled, idx1, rectToPlacePoints);
@@ -52,6 +52,11 @@ namespace Game.Pack
                 }
             }
 
+            for (int i = 0; i < placedShipsShuffled.Count; i++)
+            {
+                Rectangle rect = placedShipsShuffled[i];
+                placedShipsShuffled[i] = new Rectangle(rect.X + bounds.X, rect.Y + bounds.Y, rect.Width, rect.Height);
+            }
             return placedShipsShuffled;
         }
 

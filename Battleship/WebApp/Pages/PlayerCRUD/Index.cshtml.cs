@@ -18,7 +18,7 @@ namespace WebApp.Pages_PlayerCRUD
             _context = context;
         }
 
-        public IList<DbPlayerDTO> DbPlayerDTO { get;set; } = null!;
+        public IList<DbPlayer> DbPlayerDTO { get;set; } = null!;
 
         public async Task OnGetAsync()
         {

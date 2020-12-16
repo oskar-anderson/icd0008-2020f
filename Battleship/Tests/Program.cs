@@ -7,7 +7,6 @@ using Game;
 using RogueSharp;
 using Troschuetz.Random.Generators;
 using Game.Pack;
-using Game.Tile;
 using IrrKlang;
 using NUnit.Framework;
 
@@ -22,7 +21,6 @@ namespace Tests
             // Pack(1);
             // SoundTest();
             // MultiArrayTest();
-            GameDrawTest();
         }
 
         private static void RandomTimeTest()
@@ -223,46 +221,6 @@ namespace Tests
             Assert.Throws<IndexOutOfRangeException>(() => testMap.GetLength(1));
         }
 
-        private static void GameDrawTest()
-        {
-            int boardHeight = 10;
-            int boardWidth = 10;
-            string ships = "1x5N1; 1x4N2; 1x3N3; 1x2N4";
-            
-            List<Point> shipList;
-            string errorMsg = "";
-            if (! Utils.ShipStringParse(ships, out shipList, ref errorMsg))
-            {
-                throw new Exception($"Unexpected! Failed to parse: {ships}! This should have been checked before! {errorMsg}");
-            }
-
-            var activePlayerBoard = TileFunctions.GetRndSeaTiles(boardWidth, boardHeight);
-            var inactivePlayerBoard = TileFunctions.GetRndSeaTiles(boardWidth, boardHeight);
-          
-            Player activePlayer = new Player(
-                new List<Rectangle>(shipList.Count),
-                activePlayerBoard,
-                new Point(4,4),
-                true,
-                true,
-                0,
-                "Player A");
-            Player inactivePlayer = new Player(
-                new List<Rectangle>(shipList.Count),
-                inactivePlayerBoard,
-                new Point(4,4),
-                true,
-                true,
-                0,
-                "Player B");
-          
-            GameData gameData = new GameData(0, shipList, 1, activePlayer, inactivePlayer);
-            DrawLogicData drawLogicData = new DrawLogicData();
-            TileData.CharInfo[,] result = new TileData.CharInfo[40, 40];
-            BaseDraw.GetDrawArea(gameData, drawLogicData, ref result);
-            ;
-        }
-        
         #region Rider test
         private static Action Test { get; set; } = null!;
 

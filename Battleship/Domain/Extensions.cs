@@ -83,6 +83,26 @@ namespace Domain
             }
         }
         
+        public static void SetBoardByBounds<T>(this Rectangle board, T[,] original, T[,] setValues)
+        {
+            if (original.GetHeight() < setValues.GetHeight() 
+                || original.GetWidth() < setValues.GetWidth()
+                || board.Height != setValues.GetHeight()
+                || board.Width != setValues.GetWidth())
+            {
+                throw new Exception("Sizes do not match!");
+            }
+            for (int y = board.Top; y < board.Bottom; y++)
+            {
+                for (int x = board.Left; x < board.Right; x++)
+                {
+                    Point setValuePoint = new Point(x - board.Left, y - board.Top);
+                    T newValue = setValues.Get(setValuePoint);
+                    original.Set(new Point(x, y), newValue);
+                }
+            }
+        }
+        
         public static T Get<T>(this T[][] board, Point p)
         {
             return board[p.Y][p.X];

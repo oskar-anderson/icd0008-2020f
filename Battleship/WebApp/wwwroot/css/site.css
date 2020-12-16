@@ -85,24 +85,9 @@ table {
   border-spacing: 0;
 }
 
-.table_section {
-  overflow-x:auto;
-  user-drag: none;  /* todo images can still be dragged */
-  -webkit-user-drag: none;  /* todo images can still be dragged */
-  user-select: none;  /* https://stackoverflow.com/questions/924916/is-there-a-way-to-make-a-div-unselectable */
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
-  -o-user-select: none;
-}
-
 td, th{
   width: 128px;
   height: 128px;
-}
-
-#SlotNumber{
-  margin-left: 56px;
 }
 
 /* hovering start */

@@ -25,7 +25,7 @@ namespace WebApp.Pages_GameDataCRUD
             return Page();
         }
 
-        [BindProperty] 
+        [BindProperty]
         public DbGameData DbGameData { get; set; } = null!;
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for

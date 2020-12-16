@@ -35,6 +35,16 @@
                 <span asp-validation-for="DbGameData.InactivePlayerID" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="DbGameData.SpritesDbFriendly" class="control-label"></label>
+                <input asp-for="DbGameData.SpritesDbFriendly" class="form-control" />
+                <span asp-validation-for="DbGameData.SpritesDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DbGameData.BoardDbFriendly" class="control-label"></label>
+                <input asp-for="DbGameData.BoardDbFriendly" class="form-control" />
+                <span asp-validation-for="DbGameData.BoardDbFriendly" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="DbGameData.AllowedPlacementType" class="control-label"></label>
                 <input asp-for="DbGameData.AllowedPlacementType" class="form-control" />
                 <span asp-validation-for="DbGameData.AllowedPlacementType" class="text-danger"></span>
@@ -45,14 +55,9 @@
                 <span asp-validation-for="DbGameData.ShipSizesDbFriendly" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbGameData.Phase" class="control-label"></label>
-                <input asp-for="DbGameData.Phase" class="form-control" />
-                <span asp-validation-for="DbGameData.Phase" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DbGameData.WinningPlayer" class="control-label"></label>
-                <input asp-for="DbGameData.WinningPlayer" class="form-control" />
-                <span asp-validation-for="DbGameData.WinningPlayer" class="text-danger"></span>
+                <label asp-for="DbGameData.State" class="control-label"></label>
+                <select asp-for="DbGameData.State" class="form-control"></select>
+                <span asp-validation-for="DbGameData.State" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="DbGameData.FrameCount" class="control-label"></label>

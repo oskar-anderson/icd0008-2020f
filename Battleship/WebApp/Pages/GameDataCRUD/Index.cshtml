@@ -26,16 +26,19 @@
                 @Html.DisplayNameFor(model => model.DbGameData[0].InactivePlayer)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.DbGameData[0].SpritesDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbGameData[0].BoardDbFriendly)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.DbGameData[0].AllowedPlacementType)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DbGameData[0].ShipSizesDbFriendly)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbGameData[0].Phase)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DbGameData[0].WinningPlayer)
+                @Html.DisplayNameFor(model => model.DbGameData[0].State)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DbGameData[0].FrameCount)
@@ -59,16 +62,19 @@
                 @Html.DisplayFor(modelItem => item.InactivePlayer.ID)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.SpritesDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BoardDbFriendly)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.AllowedPlacementType)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ShipSizesDbFriendly)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Phase)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.WinningPlayer)
+                @Html.DisplayFor(modelItem => item.State)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FrameCount)

@@ -20,7 +20,16 @@ namespace ConsoleApp
             while (true)
             {
                 Console.CursorVisible = false;
-                bool isContinueActive = DbQueries.SavesAmount() != 0;
+                bool isContinueActive;
+                try
+                {
+                    isContinueActive = DbQueries.SavesAmount() != 0;
+                }
+                catch
+                {
+                    isContinueActive = false;
+                }
+
                 RuleSet ruleSet = Menu.Start(menuTree, isContinueActive);
                 
                 ConsoleBattle game;
@@ -30,8 +39,7 @@ namespace ConsoleApp
                         game = new ConsoleBattle(ruleSet.BoardHeight, ruleSet.BoardWidth, ruleSet.Ships, ruleSet.AllowedPlacementType, -1, -1);
                         break;
                     case ExitResult.Continue:
-                        GameData? gameDataTemp;
-                        DbQueries.TryGetGameWithIdx(0, out gameDataTemp);
+                        DbQueries.TryGetGameWithIdx(0, out GameData? gameDataTemp);
                         if (gameDataTemp == null) { throw new Exception("unexpected!");}
                         game = new ConsoleBattle(gameDataTemp);
                         break;
@@ -54,15 +62,13 @@ namespace ConsoleApp
                     result = PauseMenu.Run();
                     if (result == PauseMenu.PauseResult.LoadDb)
                     {
-                        GameData? gameDataTemp;
-                        DbQueries.TryGetGameWithIdx(0, out gameDataTemp);
+                        DbQueries.TryGetGameWithIdx(0, out GameData? gameDataTemp);
                         if (gameDataTemp == null) { throw new Exception("unexpected!");}
                         game = new ConsoleBattle(gameDataTemp);
                     }
                     if (result == PauseMenu.PauseResult.LoadJson)
                     {
-                        GameData? gameDataTemp;
-                        bool isGood = DataManager.LoadGameAction(out gameDataTemp);
+                        bool isGood = DataManager.LoadGameAction(out GameData? gameDataTemp);
                         if (isGood)
                         {
                             if (gameDataTemp == null) { throw new Exception("unexpected"); }

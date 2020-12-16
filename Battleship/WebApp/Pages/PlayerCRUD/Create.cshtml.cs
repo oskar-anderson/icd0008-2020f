@@ -24,7 +24,7 @@ namespace WebApp.Pages_PlayerCRUD
         }
 
         [BindProperty]
-        public DbPlayerDTO DbPlayerDTO { get; set; } = null!;
+        public DbPlayer DbPlayer { get; set; } = null!;
 
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
@@ -35,7 +35,7 @@ namespace WebApp.Pages_PlayerCRUD
                 return Page();
             }
 
-            _context.Player.Add(DbPlayerDTO);
+            _context.Player.Add(DbPlayer);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

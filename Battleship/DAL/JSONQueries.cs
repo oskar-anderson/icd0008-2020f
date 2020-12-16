@@ -45,8 +45,8 @@ namespace DAL
         
         public static GameData GetGameStateFromString(string jsonString)
         {
-            var dbGameData = JsonSerializer.Deserialize<DbGameData>(jsonString);
-            return DbGameData.ToGameModel(dbGameData);
+            GameDataSerializable dbGameData = JsonSerializer.Deserialize<GameDataSerializable>(jsonString);
+            return GameDataSerializable.ToGameModelSerializable(dbGameData);
         }
 
         public static void SaveGameAction(GameData gameData)
@@ -59,7 +59,7 @@ namespace DAL
                 defaultName : 
                 "save_" + customName  + ".json";
             var jsonOptions = new JsonSerializerOptions() { WriteIndented = true };
-            DbGameData data = new DbGameData(gameData);
+            GameDataSerializable data = new GameDataSerializable(gameData);
             var serializedGame = JsonSerializer.Serialize(data, jsonOptions);
             
             System.IO.File.WriteAllText(fileName, serializedGame);

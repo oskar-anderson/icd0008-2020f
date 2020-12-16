@@ -13,7 +13,6 @@
 
     <ItemGroup>
       <PackageReference Include="RogueSharp" Version="4.2.0" />
-      <PackageReference Include="Troschuetz.Random" Version="5.0.1" />
 
         <Reference Include="irrKlang.NET4">
             <HintPath>..\Vendor\irrKlang-64bit-1.6.0\bin\dotnet-4-64\irrKlang.NET4.dll</HintPath>

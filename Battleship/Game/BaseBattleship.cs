@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using ConsoleGameEngineCore;
+using Domain;
 using Domain.Model;
-using Game.Tile;
+using Domain.Tile;
 using IrrKlang;
 using RogueSharp;
 using Point = RogueSharp.Point;
@@ -16,19 +18,13 @@ namespace Game
        public BaseI_Input Input { get; set; } = null!;
        public ISoundEngine SoundEngine { get; set; } = null!;
 
-       public delegate void UpdateExitAction();
+       public delegate void UpdateLogicExitEventDelegate();
 
-       public UpdateExitAction UpdateExitActionStrategy { get; set; } = null!;
+       public UpdateLogicExitEventDelegate UpdateLogicExitEvent { get; set; } = null!;
        public UpdateLogic UpdateLogic { get; set; } = null!;
 
-       public static int[,] GetBoard(GameData gameData)
-       {
-          int[,] board = gameData.ActivePlayer.IsViewingOwnBoard
-             ? gameData.ActivePlayer.Board
-             : gameData.InactivePlayer.Board;
-          return board;
-       }
-       
+       private const int PlayerVerticalSeparator = 10;
+
        public GameResult Run()
        {
           Initialize();
@@ -37,10 +33,10 @@ namespace Game
           {
              double elapsedTime = (DateTime.Now - startTime).TotalSeconds;
              startTime = DateTime.Now;
-             double timeCap = elapsedTime > 0.05 ? 0.05 : elapsedTime;  // 20 fps
-             bool running = Update(timeCap, this.GameData, out var baseDrawLogic);
+             double timeCap = Math.Min(elapsedTime, 0.05);  // 20 fps
+             bool running = Update(timeCap, this.GameData);
              if (!running) { break; }
-             Draw(timeCap, this.GameData, baseDrawLogic);
+             Draw(timeCap, this.GameData);
           }
 
           return Result();
@@ -60,28 +56,36 @@ namespace Game
              throw new Exception($"Unexpected! Failed to parse: {ships}! This should have been checked before! {errorMsg}");
           }
           if (ships == null) throw new ArgumentNullException(nameof(ships));
+          if (ships.Length == 0) throw new Exception("No ships provided!");
           
-          var activePlayerBoard = TileFunctions.GetRndSeaTiles(boardWidth, boardHeight);
-          var inactivePlayerBoard = TileFunctions.GetRndSeaTiles(boardWidth, boardHeight);
           
+          string[,] boardMap = TileFunctions.GetRndSeaTiles(boardWidth, boardHeight * 2 + PlayerVerticalSeparator);
+          for (int y = boardHeight; y < boardHeight + PlayerVerticalSeparator; y++)
+          {
+             for (int x = 0; x < boardMap.GetWidth(); x++)
+             {
+                Point point = new Point(x, y);
+                boardMap.Set(point, TextureValue.VoidTile);
+             }
+          }
+
+          List<Sprite> sprites = new List<Sprite>();
           Player activePlayer = new Player(
-             new List<Rectangle>(shipList.Count),
-             activePlayerBoard,
+             new Rectangle(0, 0, boardWidth, boardHeight),
              new Point(4,4),
-             true,
-             true,
              startingPlayerType,
-             "Player A");
+             "Player A",
+             Point.Zero,
+             sprites);
           Player inactivePlayer = new Player(
-             new List<Rectangle>(shipList.Count),
-             inactivePlayerBoard,
-             new Point(4,4),
-             true,
-             true,
+             new Rectangle(0, boardHeight + PlayerVerticalSeparator, boardWidth, boardHeight),
+             new Point(4,boardHeight + PlayerVerticalSeparator + 4),
              secondPlayerType,
-             "Player B");
+             "Player B",
+             new Point(0,(boardHeight + PlayerVerticalSeparator) * TileData.Height),
+             sprites);
           
-          GameData = new GameData(allowAdjacentPlacement, shipList, 1, activePlayer, inactivePlayer);
+          GameData = new GameData(allowAdjacentPlacement, boardMap, shipList, activePlayer, inactivePlayer, sprites);
        }
 
        public GameResult Result()
@@ -96,7 +100,7 @@ namespace Game
 
           public GameResult(GameData data)
           {
-             IsOver = data.WinningPlayer != null;
+             IsOver = UpdateLogic.IsOver(data, out string winner);
              Data = data;
           }
        }
@@ -105,16 +109,14 @@ namespace Game
 
        /// <param name="gameTime">Provides a snapshot of timing values.</param>
        /// <param name="data">Game data</param>
-       /// <param name="drawLogicData">Properties like error messages and available dialog options used in drawing functions</param>
-       public bool Update(double gameTime, GameData data, out DrawLogicData drawLogicData)
+       public bool Update(double gameTime, GameData data)
        {
-          return UpdateLogic.Update(gameTime, data, out drawLogicData);
+          return UpdateLogic.Update(gameTime, data);
        }
 
 
        /// <param name="gameTime">Provides a snapshot of timing values.</param>
        /// <param name="data">Game data</param>
-       /// <param name="drawLogicData">Properties like error messages and available dialog options used in drawing functions</param>
-       public abstract void Draw(double gameTime, GameData data, DrawLogicData drawLogicData);
+       public abstract void Draw(double gameTime, GameData data);
     }
 }

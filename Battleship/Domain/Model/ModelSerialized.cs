@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Domain.Tile;
 using RogueSharp;
 using Point = RogueSharp.Point;
 
@@ -11,10 +12,14 @@ namespace Domain.Model
     {
         public override PlayerSerializable ActivePlayer { get; set; } = null!;
         public override PlayerSerializable InactivePlayer { get; set; } = null!;
+        public override List<Sprite> Sprites { get; set; } = null!;
+        // Cannot be serialized by System.Text.Json - the entire reason this class exists
+        [JsonIgnore] 
+        public override string[,] Board2D { get; set; } = null!;
+        public string[][] BoardSerializationFriendly { get; set; } = null!;
         public override int AllowedPlacementType { get; set; }
         public override List<Point> ShipSizes { get; set; } = null!;
-        public override int Phase { get; set; }
-        public override string? WinningPlayer { get; set; }
+        public override GameState State { get; set; }
         public override int FrameCount { get; set; }
 
         public GameDataSerializable()
@@ -26,10 +31,11 @@ namespace Domain.Model
         {
             ActivePlayer = new PlayerSerializable(gameData.ActivePlayer);
             InactivePlayer = new PlayerSerializable(gameData.InactivePlayer);
+            Sprites = gameData.Sprites;
+            BoardSerializationFriendly = gameData.Board2D.ToJaggedArray();
             AllowedPlacementType = gameData.AllowedPlacementType;
             ShipSizes = gameData.ShipSizes;
-            Phase = gameData.Phase;
-            WinningPlayer = gameData.WinningPlayer;
+            State = gameData.State;
             FrameCount = gameData.FrameCount;
         }
 
@@ -37,16 +43,15 @@ namespace Domain.Model
         {
             var game = new GameData()
             {
-                ActivePlayer = PlayerSerializable.ToGameModelSerializable(gameData.ActivePlayer, 
-                    gameData.ActivePlayer.BoardSerializationFriendly.Length, 
-                    gameData.ActivePlayer.BoardSerializationFriendly[0].Length),
-                InactivePlayer = PlayerSerializable.ToGameModelSerializable(gameData.InactivePlayer, 
-                    gameData.ActivePlayer.BoardSerializationFriendly.Length, 
-                    gameData.ActivePlayer.BoardSerializationFriendly[0].Length),
+                ActivePlayer = PlayerSerializable.ToGameModelSerializable(gameData.ActivePlayer),
+                InactivePlayer = PlayerSerializable.ToGameModelSerializable(gameData.InactivePlayer),
+                Sprites = gameData.Sprites,
+                Board2D = gameData.BoardSerializationFriendly.To2DArray(
+                    gameData.BoardSerializationFriendly.Length, 
+                    gameData.BoardSerializationFriendly[0].Length),
                 AllowedPlacementType = gameData.AllowedPlacementType,
                 ShipSizes = gameData.ShipSizes,
-                Phase = gameData.Phase,
-                WinningPlayer = gameData.WinningPlayer,
+                State = gameData.State,
                 FrameCount = gameData.FrameCount
             };
             return game;
@@ -56,35 +61,20 @@ namespace Domain.Model
     public sealed class PlayerSerializable : AbstractPlayer
     {
         public override List<Rectangle> Ships { get; set; } = null!;
-        public int[][] BoardSerializationFriendly { get; set; } = null!;
         public override Stack<ShootingHistoryItem> ShootingHistory { get; set; } = new Stack<ShootingHistoryItem>();
-        public override Point PPlayer { get; set; }
+        public override Sprite.PlayerSprite Sprite { get; set; } = null!;
+        public override Rectangle BoardBounds { get; set; }
         public override int ShipBeingPlacedIdx { get; set; } = 0;
-        public override bool IsViewingOwnBoard { get; set; }
         public override bool IsHorizontalPlacement { get; set; } = true;
         public override string Name { get; set; } = null!;
         public override int PlayerType { get; set; }
-        public override float fOffsetY { get; set; } = 0.0f;
-        public override float fOffsetX { get; set; } = 0.0f;
-        public override float fScaleX { get; set; } = 1.0f;
-        public override float fScaleY { get; set; } = 1.0f;
-        public override float fSelectedTileX { get; set; } = 0.0f;
-        public override float fSelectedTileY { get; set; } = 0.0f;
+        public override float fCameraPixelPosY { get; set; } = 0.0f;
+        public override float fCameraPixelPosX { get; set; } = 0.0f;
+        public override float fCameraScaleX { get; set; } = 1.0f;
+        public override float fCameraScaleY { get; set; } = 1.0f;
+        public override float fMouseSelectedTileX { get; set; } = 0.0f;
+        public override float fMouseSelectedTileY { get; set; } = 0.0f;
         
-        [JsonIgnore]
-        public List<HoverElement> BoardHover { get; set; } = new List<HoverElement>();
-
-        public struct HoverElement
-        {
-            public Point Point;
-            public readonly int TileExponent;
-
-            public HoverElement(Point point, int tileExponent)
-            {
-                Point = point;
-                TileExponent = tileExponent;
-            }
-        }
         
         public PlayerSerializable()
         {
@@ -94,41 +84,39 @@ namespace Domain.Model
         public PlayerSerializable(Player player)
         {
             Ships = player.Ships;
-            BoardSerializationFriendly = player.Board.ToJaggedArray();
             ShootingHistory = player.ShootingHistory;
-            PPlayer = player.PPlayer;
+            Sprite = player.Sprite;
+            BoardBounds = player.BoardBounds;
             ShipBeingPlacedIdx = player.ShipBeingPlacedIdx;
-            IsViewingOwnBoard = player.IsViewingOwnBoard;
             IsHorizontalPlacement = player.IsHorizontalPlacement;
             Name = player.Name;
             PlayerType = player.PlayerType;
-            fOffsetY = player.fOffsetY;
-            fOffsetX = player.fOffsetX;
-            fScaleX = player.fScaleX;
-            fScaleY = player.fScaleY;
-            fSelectedTileX = player.fSelectedTileX;
-            fSelectedTileY = player.fSelectedTileY;
+            fCameraPixelPosY = player.fCameraPixelPosY;
+            fCameraPixelPosX = player.fCameraPixelPosX;
+            fCameraScaleX = player.fCameraScaleX;
+            fCameraScaleY = player.fCameraScaleY;
+            fMouseSelectedTileX = player.fMouseSelectedTileX;
+            fMouseSelectedTileY = player.fMouseSelectedTileY;
         }
         
-        public static Player ToGameModelSerializable(PlayerSerializable player, int boardHeight, int boardWidth)
+        public static Player ToGameModelSerializable(PlayerSerializable player)
         {
             var result = new Player()
             {
                 Ships = player.Ships,
-                Board = player.BoardSerializationFriendly.To2DArray(boardWidth, boardHeight),
                 ShootingHistory = player.ShootingHistory,
-                PPlayer = player.PPlayer,
+                Sprite = player.Sprite,
+                BoardBounds = player.BoardBounds,
                 ShipBeingPlacedIdx = player.ShipBeingPlacedIdx,
-                IsViewingOwnBoard = player.IsViewingOwnBoard,
                 IsHorizontalPlacement = player.IsHorizontalPlacement,
                 Name = player.Name,
                 PlayerType = player.PlayerType,
-                fOffsetY = player.fOffsetY,
-                fOffsetX = player.fOffsetX,
-                fScaleX = player.fScaleX,
-                fScaleY = player.fScaleY,
-                fSelectedTileX = player.fSelectedTileX,
-                fSelectedTileY = player.fSelectedTileY,
+                fCameraPixelPosY = player.fCameraPixelPosY,
+                fCameraPixelPosX = player.fCameraPixelPosX,
+                fCameraScaleX = player.fCameraScaleX,
+                fCameraScaleY = player.fCameraScaleY,
+                fMouseSelectedTileX = player.fMouseSelectedTileX,
+                fMouseSelectedTileY = player.fMouseSelectedTileY,
             };
             return result;
         }

@@ -18,7 +18,7 @@ namespace WebApp.Pages_PlayerCRUD
             _context = context;
         }
 
-        public DbPlayerDTO DbPlayerDTO { get; set; } = null!;
+        public DbPlayer DbPlayer { get; set; } = null!;
 
         public async Task<IActionResult> OnGetAsync(string id)
         {
@@ -27,9 +27,9 @@ namespace WebApp.Pages_PlayerCRUD
                 return NotFound();
             }
 
-            DbPlayerDTO = await _context.Player.FirstOrDefaultAsync(m => m.ID == id);
+            DbPlayer = await _context.Player.FirstOrDefaultAsync(m => m.ID == id);
 
-            if (DbPlayerDTO == null)
+            if (DbPlayer == null)
             {
                 return NotFound();
             }

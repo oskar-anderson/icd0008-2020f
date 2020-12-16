@@ -7,8 +7,8 @@ using System.Text.Json;
 using DAL;
 using Domain;
 using Domain.Model;
+using Domain.Tile;
 using Game;
-using Game.Tile;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -104,48 +104,43 @@ namespace WebApp.Pages.Battleship
             switch (KeyPress)
             {
                 case "LEFT":
-                    game.Input.NewKeyDown[ConsoleKey.A] = true;
-                    game.Input.KeyDown[ConsoleKey.A] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.A] = new KeyStatus(true, true);
                     break;
                 
                 case "RIGHT":
-                    game.Input.NewKeyDown[ConsoleKey.D] = true;
-                    game.Input.KeyDown[ConsoleKey.D] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.D] = new KeyStatus(true, true);
                     break;
                 
                 case "UP":
-                    game.Input.NewKeyDown[ConsoleKey.W] = true;
-                    game.Input.KeyDown[ConsoleKey.W] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.W] = new KeyStatus(true, true);
                     break;
                 
                 case "DOWN":
-                    game.Input.NewKeyDown[ConsoleKey.S] = true;
-                    game.Input.KeyDown[ConsoleKey.S] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.S] = new KeyStatus(true, true);
                     break;
                 
                 case "Z":
-                    game.Input.NewKeyDown[ConsoleKey.Z] = true;
-                    game.Input.KeyDown[ConsoleKey.Z] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.Z] = new KeyStatus(true, true);
                     break;
                 
                 case "X":
-                    game.Input.NewKeyDown[ConsoleKey.X] = true;
-                    game.Input.KeyDown[ConsoleKey.X] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.X] = new KeyStatus(true, true);
                     break;
                 
                 case "d1":
-                    game.Input.NewKeyDown[ConsoleKey.D1] = true;
-                    game.Input.KeyDown[ConsoleKey.D1] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.D1] = new KeyStatus(true, true);
                     break;
                 
                 case "d2":
-                    game.Input.NewKeyDown[ConsoleKey.D2] = true;
-                    game.Input.KeyDown[ConsoleKey.D2] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.D2] = new KeyStatus(true, true);
                     break;
                 
                 case "d3":
-                    game.Input.NewKeyDown[ConsoleKey.D3] = true;
-                    game.Input.KeyDown[ConsoleKey.D3] = true;
+                    game.Input.KeyStatuses[UsedKeyKeys.D3] = new KeyStatus(true, true);
+                    break;
+                
+                case "takeBack":
+                    game.Input.KeyStatuses[UsedKeyKeys.R] = new KeyStatus(true, true);
                     break;
                 default:
                     throw new Exception("unexpected!");
@@ -160,29 +155,8 @@ namespace WebApp.Pages.Battleship
 
         private void DoGame(BaseBattleship game)
         {
-            DrawLogicData drawLogicData;
-            game.Update(1d, game.GameData, out drawLogicData); 
-            
-            int[,] tiles = WebDrawLogic.Draw(0.0d, game.GameData, drawLogicData);
-
-            TileData.CharInfo[,] result = new TileData.CharInfo[
-                TileData.GetHeight() * game.GameData.ActivePlayer.Board.GetHeight(), 
-                TileData.GetWidth() * game.GameData.ActivePlayer.Board.GetWidth()];
-            for (int i = 0; i < tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                {
-                    int drawPointValue = tiles[i, j];
-                    WebDrawLogic.GetTileValueToTileData(new Point(j, i), drawPointValue, ref result);
-                }
-            }
-            GameBoard = result;
-        }
-
-        private void SetSerializedData(GameData gameData)
-        {
-            GameDataSerializable gameDataSerializableSave = new GameDataSerializable(gameData);
-            GameDataSerialized = JsonSerializer.Serialize(gameDataSerializableSave, new JsonSerializerOptions() { WriteIndented = true });
+            game.Update(1d, game.GameData);
+            GameBoard = WebDrawLogic.GetDraw(game.GameData);
         }
 
         public IActionResult OnPostSave()

@@ -5,13 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
 using Domain;
 using Domain.Model;
+using Domain.Tile;
 using Game;
 using RogueSharp;
 
 namespace DAL
 {
     [Table(nameof(AppDbContext.GameData))]
-    public sealed class DbGameData : AbstractGameData<DbPlayerDTO>
+    public sealed class DbGameData : AbstractGameData<DbPlayer>
     {
         [StringLength(36)]
         public string ID { get; set; } = Guid.NewGuid().ToString();
@@ -21,8 +22,41 @@ namespace DAL
         public string ActivePlayerID { get; set; } = null!;
         public string InactivePlayerID { get; set; } = null!;
         
-        public override DbPlayerDTO ActivePlayer { get; set; } = null!;
-        public override DbPlayerDTO InactivePlayer { get; set; } = null!;
+        public override DbPlayer ActivePlayer { get; set; } = null!;
+        public override DbPlayer InactivePlayer { get; set; } = null!;
+        [NotMapped]
+        public override List<Sprite> Sprites { get; set; } = null!;
+
+        public string SpritesDbFriendly 
+        {
+            get => JsonSerializer.Serialize(Sprites);
+            set
+            {
+                if (value != null)
+                { 
+                    Sprites = JsonSerializer.Deserialize<List<Sprite>>(value);                    
+                }
+            }
+        }
+
+        [NotMapped]
+        // Cannot be serialized by System.Text.Json
+        public override string[,] Board2D { get; set; } = null!;
+        
+        [NotMapped]
+        public string[][] BoardJagged { get; set; } = null!;
+        
+        public string BoardDbFriendly 
+        {
+            get => JsonSerializer.Serialize(BoardJagged);
+            set
+            {
+                if (value != null)
+                { 
+                    BoardJagged = JsonSerializer.Deserialize<string[][]>(value);                    
+                }
+            }
+        }
         public override int AllowedPlacementType { get; set; }
         [NotMapped]
         public override List<Point> ShipSizes { get; set; } = null!;
@@ -38,8 +72,7 @@ namespace DAL
                 }
             }
         }
-        public override int Phase { get; set; }
-        public override string? WinningPlayer { get; set; }
+        public override GameState State { get; set; }
         public override int FrameCount { get; set; }
 
         public DbGameData()
@@ -50,14 +83,15 @@ namespace DAL
         
         public DbGameData(GameData gameData)
         {
-            ActivePlayer = new DbPlayerDTO(gameData.ActivePlayer);
+            ActivePlayer = new DbPlayer(gameData.ActivePlayer);
             ActivePlayerID = ActivePlayer.ID;
-            InactivePlayer = new DbPlayerDTO(gameData.InactivePlayer);
+            InactivePlayer = new DbPlayer(gameData.InactivePlayer);
             InactivePlayerID = InactivePlayer.ID;
+            Sprites = gameData.Sprites;
+            BoardJagged = gameData.Board2D.ToJaggedArray();
             AllowedPlacementType = gameData.AllowedPlacementType;
             ShipSizes = gameData.ShipSizes;
-            Phase = gameData.Phase;
-            WinningPlayer = gameData.WinningPlayer;
+            State = gameData.State;
             FrameCount = gameData.FrameCount;
         }
 
@@ -65,16 +99,15 @@ namespace DAL
         {
             var game = new GameData()
             {
-                ActivePlayer = DbPlayerDTO.ToGameModel(gameData.ActivePlayer, 
-                    gameData.ActivePlayer.Board.Length, 
-                    gameData.ActivePlayer.Board[0].Length),
-                InactivePlayer = DbPlayerDTO.ToGameModel(gameData.InactivePlayer, 
-                    gameData.ActivePlayer.Board.Length, 
-                    gameData.ActivePlayer.Board[0].Length),
+                ActivePlayer = DbPlayer.ToGameModel(gameData.ActivePlayer),
+                InactivePlayer = DbPlayer.ToGameModel(gameData.InactivePlayer),
+                Sprites = gameData.Sprites,
+                Board2D = gameData.BoardJagged.To2DArray(
+                    gameData.BoardJagged.Length,
+                    gameData.BoardJagged[0].Length),
                 AllowedPlacementType = gameData.AllowedPlacementType,
                 ShipSizes = gameData.ShipSizes,
-                Phase = gameData.Phase,
-                WinningPlayer = gameData.WinningPlayer,
+                State = gameData.State,
                 FrameCount = gameData.FrameCount
             };
             return game;
@@ -83,7 +116,7 @@ namespace DAL
 
 
     [Table(nameof(AppDbContext.Player))]
-    public sealed class DbPlayerDTO : AbstractPlayer
+    public sealed class DbPlayer : AbstractPlayer
     {
         [StringLength(36)]
         public string ID { get; set; } = Guid.NewGuid().ToString();
@@ -99,28 +132,6 @@ namespace DAL
                 }
             }
         }
-        public string BoardDbFriendly 
-        {
-            get => JsonSerializer.Serialize(Board);
-            set
-            {
-                if (value != null)
-                { 
-                    Board = JsonSerializer.Deserialize<int[][]>(value);                    
-                }
-            }
-        }
-        public string PPlayerDbFriendly 
-        {
-            get => JsonSerializer.Serialize(PPlayer);
-            set
-            {
-                if (value != null)
-                { 
-                    PPlayer = JsonSerializer.Deserialize<Point>(value);                    
-                }
-            }
-        }
         public string ShootingHistoryDbFriendly 
         {
             get => JsonSerializer.Serialize(ShootingHistory);
@@ -133,73 +144,95 @@ namespace DAL
             }
         }
 
+        public string SpriteDbFriendly
+        {
+            get => JsonSerializer.Serialize(Sprite);
+            set
+            {
+                if (value != null)
+                { 
+                    Sprite = JsonSerializer.Deserialize<Sprite.PlayerSprite>(value);
+                }
+            }
+        }
+        
+        public string BoardBoundsDbFriendly
+        {
+            get => JsonSerializer.Serialize(BoardBounds);
+            set
+            {
+                if (value != null)
+                { 
+                    BoardBounds = JsonSerializer.Deserialize<Rectangle>(value);
+                }
+            }
+        }
+
 
         [NotMapped] 
         public override List<Rectangle> Ships { get; set; } = null!;
-        [NotMapped]
-        public int[][] Board { get; set; } = null!;
 
         [NotMapped]
         public override Stack<ShootingHistoryItem> ShootingHistory { get; set; } = new Stack<ShootingHistoryItem>();
 
+        [NotMapped] 
+        public override Sprite.PlayerSprite Sprite { get; set; } = null!;
+        
         [NotMapped]
-        public override Point PPlayer { get; set; }
+        public override Rectangle BoardBounds { get; set; }
 
         public override int ShipBeingPlacedIdx { get; set; }
-        public override bool IsViewingOwnBoard { get; set; }
         public override bool IsHorizontalPlacement { get; set; } = true;
         public override string Name { get; set; } = null!;
         public override int PlayerType { get; set; }
-        public override float fOffsetY { get; set; } = 0.0f;
-        public override float fOffsetX { get; set; } = 0.0f;
-        public override float fScaleX { get; set; } = 1.0f;
-        public override float fScaleY { get; set; } = 1.0f;
-        public override float fSelectedTileX { get; set; } = 0.0f;
-        public override float fSelectedTileY { get; set; } = 0.0f;
+        public override float fCameraPixelPosY { get; set; } = 0.0f;
+        public override float fCameraPixelPosX { get; set; } = 0.0f;
+        public override float fCameraScaleX { get; set; } = 1.0f;
+        public override float fCameraScaleY { get; set; } = 1.0f;
+        public override float fMouseSelectedTileX { get; set; } = 0.0f;
+        public override float fMouseSelectedTileY { get; set; } = 0.0f;
         
-        public DbPlayerDTO()
+        public DbPlayer()
         {
             // EF uses this
         }
 
-        public DbPlayerDTO(Player player)
+        public DbPlayer(Player player)
         {
             Ships = player.Ships;
-            Board = player.Board.ToJaggedArray();
             ShootingHistory = player.ShootingHistory;
-            PPlayer = player.PPlayer;
+            Sprite = player.Sprite;
+            BoardBounds = player.BoardBounds;
             ShipBeingPlacedIdx = player.ShipBeingPlacedIdx;
-            IsViewingOwnBoard = player.IsViewingOwnBoard;
             IsHorizontalPlacement = player.IsHorizontalPlacement;
             Name = player.Name;
             PlayerType = player.PlayerType;
-            fOffsetY = player.fOffsetY;
-            fOffsetX = player.fOffsetX;
-            fScaleX = player.fScaleX;
-            fScaleY = player.fScaleY;
-            fSelectedTileX = player.fSelectedTileX;
-            fSelectedTileY = player.fSelectedTileY;
+            fCameraPixelPosY = player.fCameraPixelPosY;
+            fCameraPixelPosX = player.fCameraPixelPosX;
+            fCameraScaleX = player.fCameraScaleX;
+            fCameraScaleY = player.fCameraScaleY;
+            fMouseSelectedTileX = player.fMouseSelectedTileX;
+            fMouseSelectedTileY = player.fMouseSelectedTileY;
         }
         
-        public static Player ToGameModel(DbPlayerDTO player, int boardHeight, int boardWidth)
+        public static Player ToGameModel(DbPlayer player)
         {
             var result = new Player()
             {
                 Ships = player.Ships,
-                Board = player.Board.To2DArray(boardWidth, boardHeight),
                 ShootingHistory = player.ShootingHistory,
-                PPlayer = player.PPlayer,
+                Sprite = player.Sprite,
+                BoardBounds = player.BoardBounds,
                 ShipBeingPlacedIdx = player.ShipBeingPlacedIdx,
-                IsViewingOwnBoard = player.IsViewingOwnBoard,
                 IsHorizontalPlacement = player.IsHorizontalPlacement,
                 Name = player.Name,
                 PlayerType = player.PlayerType,
-                fOffsetY = player.fOffsetY,
-                fOffsetX = player.fOffsetX,
-                fScaleX = player.fScaleX,
-                fScaleY = player.fScaleY,
-                fSelectedTileX = player.fSelectedTileX,
-                fSelectedTileY = player.fSelectedTileY,
+                fCameraPixelPosY = player.fCameraPixelPosY,
+                fCameraPixelPosX = player.fCameraPixelPosX,
+                fCameraScaleX = player.fCameraScaleX,
+                fCameraScaleY = player.fCameraScaleY,
+                fMouseSelectedTileX = player.fMouseSelectedTileX,
+                fMouseSelectedTileY = player.fMouseSelectedTileY,
             };
             return result;
         }

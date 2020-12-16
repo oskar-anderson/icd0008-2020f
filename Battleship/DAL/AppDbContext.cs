@@ -9,15 +9,25 @@ namespace DAL
     // dotnet ef Migrations remove           --project DAL --startup-project ConsoleApp --context DAL.AppDbContext
     
     // cd WebApp
+    // dotnet build
     // dotnet aspnet-codegenerator razorpage -m DbGameData -dc AppDbContext --useDefaultLayout -outDir Pages/GameDataCRUD --referenceScriptLibraries -f
-    // dotnet aspnet-codegenerator razorpage -m DbPlayerDTO -dc AppDbContext --useDefaultLayout -outDir Pages/PlayerCRUD --referenceScriptLibraries -f
+    // dotnet aspnet-codegenerator razorpage -m DbPlayer -dc AppDbContext --useDefaultLayout -outDir Pages/PlayerCRUD --referenceScriptLibraries -f
 
     
     public class AppDbContext : DbContext
     {
         public DbSet<DbGameData> GameData { get; set; } = default!;
-        public DbSet<DbPlayerDTO> Player { get; set; } = default!;
+        public DbSet<DbPlayer> Player { get; set; } = default!;
+
         
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+            
+        }
+        public AppDbContext()
+        {
+            
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);

@@ -45,16 +45,15 @@ namespace ConsoleApp
              SoundEngineOptionFlag.LoadPlugins;
           SoundEngine = new ISoundEngine(SoundOutputDriver.AutoDetect, options);
           Input = new ConsoleInput(ConsoleEngine);
-          UpdateExitActionStrategy = Helper.FixConsole;
-          UpdateLogic = new UpdateLogic(UpdateExitActionStrategy, Input, SoundEngine);
+          UpdateLogicExitEvent = Helper.FixConsole;
+          UpdateLogic = new UpdateLogic(UpdateLogicExitEvent, Input, SoundEngine);
        }
 
        /// <param name="gameTime">Provides a snapshot of timing values.</param>
        /// <param name="gameData">Game data</param>
-       /// <param name="drawLogicData">Properties like error messages and available dialog options used in drawing functions</param>
-       public override void Draw(double gameTime, GameData gameData, DrawLogicData drawLogicData)
+       public override void Draw(double gameTime, GameData gameData)
        {
-          ConsoleDrawLogic.Draw(gameTime, gameData, drawLogicData);
+          ConsoleDrawLogic.Draw(gameTime, gameData);
        }
     }
 }

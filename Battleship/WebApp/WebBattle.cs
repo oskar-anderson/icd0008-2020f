@@ -28,11 +28,11 @@ namespace WebApp
                 SoundEngineOptionFlag.LoadPlugins;
             SoundEngine = new ISoundEngine(SoundOutputDriver.AutoDetect, options);
             Input = new WebInput();
-            UpdateExitActionStrategy = () => { return;};
-            UpdateLogic = new UpdateLogic(UpdateExitActionStrategy, Input, SoundEngine);
+            UpdateLogicExitEvent = () => { return;};
+            UpdateLogic = new UpdateLogic(UpdateLogicExitEvent, Input, SoundEngine);
         }
 
-        public override void Draw(double gameTime, GameData data, DrawLogicData drawLogicData)
+        public override void Draw(double gameTime, GameData data)
         {
             // this cannot be used
             throw new System.NotImplementedException();

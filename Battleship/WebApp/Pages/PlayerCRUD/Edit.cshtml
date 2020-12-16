@@ -13,81 +13,76 @@
     <div class="col-md-4">
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="DbPlayerDTO.ID" />
+            <input type="hidden" asp-for="DbPlayer.ID" />
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.ShipsDbFriendly" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.ShipsDbFriendly" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.ShipsDbFriendly" class="text-danger"></span>
+                <label asp-for="DbPlayer.ShipsDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayer.ShipsDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayer.ShipsDbFriendly" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.BoardDbFriendly" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.BoardDbFriendly" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.BoardDbFriendly" class="text-danger"></span>
+                <label asp-for="DbPlayer.ShootingHistoryDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayer.ShootingHistoryDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayer.ShootingHistoryDbFriendly" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.PPlayerDbFriendly" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.PPlayerDbFriendly" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.PPlayerDbFriendly" class="text-danger"></span>
+                <label asp-for="DbPlayer.SpriteDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayer.SpriteDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayer.SpriteDbFriendly" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.ShootingHistoryDbFriendly" class="text-danger"></span>
+                <label asp-for="DbPlayer.BoardBoundsDbFriendly" class="control-label"></label>
+                <input asp-for="DbPlayer.BoardBoundsDbFriendly" class="form-control" />
+                <span asp-validation-for="DbPlayer.BoardBoundsDbFriendly" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.ShipBeingPlacedIdx" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.ShipBeingPlacedIdx" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.ShipBeingPlacedIdx" class="text-danger"></span>
+                <label asp-for="DbPlayer.ShipBeingPlacedIdx" class="control-label"></label>
+                <input asp-for="DbPlayer.ShipBeingPlacedIdx" class="form-control" />
+                <span asp-validation-for="DbPlayer.ShipBeingPlacedIdx" class="text-danger"></span>
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DbPlayerDTO.IsViewingOwnBoard" /> @Html.DisplayNameFor(model => model.DbPlayerDTO.IsViewingOwnBoard)
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DbPlayerDTO.IsHorizontalPlacement" /> @Html.DisplayNameFor(model => model.DbPlayerDTO.IsHorizontalPlacement)
+                    <input class="form-check-input" asp-for="DbPlayer.IsHorizontalPlacement" /> @Html.DisplayNameFor(model => model.DbPlayer.IsHorizontalPlacement)
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.Name" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.Name" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.Name" class="text-danger"></span>
+                <label asp-for="DbPlayer.Name" class="control-label"></label>
+                <input asp-for="DbPlayer.Name" class="form-control" />
+                <span asp-validation-for="DbPlayer.Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.PlayerType" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.PlayerType" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.PlayerType" class="text-danger"></span>
+                <label asp-for="DbPlayer.PlayerType" class="control-label"></label>
+                <input asp-for="DbPlayer.PlayerType" class="form-control" />
+                <span asp-validation-for="DbPlayer.PlayerType" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fOffsetY" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fOffsetY" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fOffsetY" class="text-danger"></span>
+                <label asp-for="DbPlayer.fCameraPixelPosY" class="control-label"></label>
+                <input asp-for="DbPlayer.fCameraPixelPosY" class="form-control" />
+                <span asp-validation-for="DbPlayer.fCameraPixelPosY" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fOffsetX" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fOffsetX" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fOffsetX" class="text-danger"></span>
+                <label asp-for="DbPlayer.fCameraPixelPosX" class="control-label"></label>
+                <input asp-for="DbPlayer.fCameraPixelPosX" class="form-control" />
+                <span asp-validation-for="DbPlayer.fCameraPixelPosX" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fScaleX" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fScaleX" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fScaleX" class="text-danger"></span>
+                <label asp-for="DbPlayer.fCameraScaleX" class="control-label"></label>
+                <input asp-for="DbPlayer.fCameraScaleX" class="form-control" />
+                <span asp-validation-for="DbPlayer.fCameraScaleX" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fScaleY" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fScaleY" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fScaleY" class="text-danger"></span>
+                <label asp-for="DbPlayer.fCameraScaleY" class="control-label"></label>
+                <input asp-for="DbPlayer.fCameraScaleY" class="form-control" />
+                <span asp-validation-for="DbPlayer.fCameraScaleY" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fSelectedTileX" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fSelectedTileX" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fSelectedTileX" class="text-danger"></span>
+                <label asp-for="DbPlayer.fMouseSelectedTileX" class="control-label"></label>
+                <input asp-for="DbPlayer.fMouseSelectedTileX" class="form-control" />
+                <span asp-validation-for="DbPlayer.fMouseSelectedTileX" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="DbPlayerDTO.fSelectedTileY" class="control-label"></label>
-                <input asp-for="DbPlayerDTO.fSelectedTileY" class="form-control" />
-                <span asp-validation-for="DbPlayerDTO.fSelectedTileY" class="text-danger"></span>
+                <label asp-for="DbPlayer.fMouseSelectedTileY" class="control-label"></label>
+                <input asp-for="DbPlayer.fMouseSelectedTileY" class="form-control" />
+                <span asp-validation-for="DbPlayer.fMouseSelectedTileY" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

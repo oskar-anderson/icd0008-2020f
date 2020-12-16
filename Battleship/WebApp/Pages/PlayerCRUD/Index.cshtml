@@ -17,19 +17,16 @@
                 @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShipsDbFriendly)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].BoardDbFriendly)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].PPlayerDbFriendly)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShootingHistoryDbFriendly)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShipBeingPlacedIdx)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].SpriteDbFriendly)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].IsViewingOwnBoard)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].BoardBoundsDbFriendly)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].ShipBeingPlacedIdx)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.DbPlayerDTO[0].IsHorizontalPlacement)
@@ -41,22 +38,22 @@
                 @Html.DisplayNameFor(model => model.DbPlayerDTO[0].PlayerType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fOffsetY)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fCameraPixelPosY)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fOffsetX)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fCameraPixelPosX)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fScaleX)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fCameraScaleX)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fScaleY)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fCameraScaleY)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fSelectedTileX)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fMouseSelectedTileX)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fSelectedTileY)
+                @Html.DisplayNameFor(model => model.DbPlayerDTO[0].fMouseSelectedTileY)
             </th>
             <th></th>
         </tr>
@@ -68,19 +65,16 @@
                 @Html.DisplayFor(modelItem => item.ShipsDbFriendly)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.BoardDbFriendly)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PPlayerDbFriendly)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.ShootingHistoryDbFriendly)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.ShipBeingPlacedIdx)
+                @Html.DisplayFor(modelItem => item.SpriteDbFriendly)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IsViewingOwnBoard)
+                @Html.DisplayFor(modelItem => item.BoardBoundsDbFriendly)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShipBeingPlacedIdx)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsHorizontalPlacement)
@@ -92,22 +86,22 @@
                 @Html.DisplayFor(modelItem => item.PlayerType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fOffsetY)
+                @Html.DisplayFor(modelItem => item.fCameraPixelPosY)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fOffsetX)
+                @Html.DisplayFor(modelItem => item.fCameraPixelPosX)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fScaleX)
+                @Html.DisplayFor(modelItem => item.fCameraScaleX)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fScaleY)
+                @Html.DisplayFor(modelItem => item.fCameraScaleY)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fSelectedTileX)
+                @Html.DisplayFor(modelItem => item.fMouseSelectedTileX)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.fSelectedTileY)
+                @Html.DisplayFor(modelItem => item.fMouseSelectedTileY)
             </td>
             <td>
                 <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |

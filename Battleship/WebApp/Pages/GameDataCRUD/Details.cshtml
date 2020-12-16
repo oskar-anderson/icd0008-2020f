@@ -36,6 +36,18 @@
             @Html.DisplayFor(model => model.DbGameData.InactivePlayer.ID)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.SpritesDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.SpritesDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.DbGameData.BoardDbFriendly)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.DbGameData.BoardDbFriendly)
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DbGameData.AllowedPlacementType)
         </dt>
         <dd class="col-sm-10">
@@ -48,16 +60,10 @@
             @Html.DisplayFor(model => model.DbGameData.ShipSizesDbFriendly)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbGameData.Phase)
+            @Html.DisplayNameFor(model => model.DbGameData.State)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbGameData.Phase)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DbGameData.WinningPlayer)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DbGameData.WinningPlayer)
+            @Html.DisplayFor(model => model.DbGameData.State)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.DbGameData.FrameCount)

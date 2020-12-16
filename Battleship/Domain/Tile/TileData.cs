@@ -1,31 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Text.Json.Serialization;
-using System.Text.Json;
 using System.Text;
 
-namespace Game.Tile
+namespace Domain.Tile
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public static class TileData
     {
-        public static class TileValue
-        {
-            public const int EmptyTileV1 = 0;
-            public const int EmptyTileV2 = 1;
-            public const int SelectedTileRed = 2;
-            public const int Ship = 3;
-            public const int ImpossibleShip = 4;
-            public const int HitShip = 5;
-            public const int HitWater = 6;
-            public const int SelectedTileGreen = 7;
-            public const int ImpossibleShipHitbox = 8;
-            public const int VoidTile = 9;
-        }
-        
-        public static readonly int[] HitTiles = {TileValue.HitShip, TileValue.HitWater};
-        public static readonly int[] SeaTiles = {TileValue.EmptyTileV1, TileValue.EmptyTileV2};
+        public static readonly string[] SeaTiles = {TextureValue.WaterV1, TextureValue.WaterV2};
 
         
         public static class C
@@ -68,13 +51,11 @@ namespace Game.Tile
             public static int White = 15;
         }
 
-        private const int Width = 4;
-        private const int Height = 4;
+        public const int Width = 4;
+        public const int Height = 4;
 
-        public static int GetWidth() => Width;
-        public static int GetHeight() => Height;
 
-        public static readonly TileInfo VoidTile = new TileInfo(TileValue.VoidTile, new StringBuilder()
+        public static readonly TileProperty VoidTile = new TileProperty(TextureValue.VoidTile, new StringBuilder()
                 .Append("    ")
                 .Append("    ")
                 .Append("    ")
@@ -85,9 +66,10 @@ namespace Game.Tile
                 C.__, C.__, C.__, C.__,
                 C.__, C.__, C.__, C.__,
                 C.__, C.__, C.__, C.__
-            });
+            }, true
+            );
 
-        public static readonly TileInfo EmptyTileV1 = new TileInfo(TileValue.EmptyTileV1, new StringBuilder()
+        public static readonly TileProperty EmptyTileV1 = new TileProperty(TextureValue.WaterV1, new StringBuilder()
                 .Append("~~~~")
                 .Append("~##~")
                 .Append("~##~")
@@ -98,9 +80,10 @@ namespace Game.Tile
                 C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
+            }, false
+            );
 
-        public static readonly TileInfo EmptyTileV2 = new TileInfo(TileValue.EmptyTileV2, new StringBuilder()
+        public static readonly TileProperty EmptyTileV2 = new TileProperty(TextureValue.WaterV2, new StringBuilder()
                 .Append("^^^^")
                 .Append("^##^")
                 .Append("^##^")
@@ -111,48 +94,10 @@ namespace Game.Tile
                 C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DM, C.DM, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
+            }, false
+            );
 
-        public static readonly TileInfo SelectedTileRed = new TileInfo(TileValue.SelectedTileRed, new StringBuilder()
-                .Append("~~~~")
-                .Append("~@@~")
-                .Append("~@@~")
-                .Append("~~~~"),
-            new int[]
-            {
-                C.DC, C.DC, C.DC, C.DC,
-                C.DC, C.DR, C.DR, C.DC,
-                C.DC, C.DR, C.DR, C.DC,
-                C.DC, C.DC, C.DC, C.DC
-            });
-        
-        public static readonly TileInfo SelectedTileGreen = new TileInfo(TileValue.SelectedTileGreen, new StringBuilder()
-                .Append("~~~~")
-                .Append("~@@~")
-                .Append("~@@~")
-                .Append("~~~~"),
-            new int[]
-            {
-                C.DC, C.DC, C.DC, C.DC,
-                C.DC, C._G, C._G, C.DC,
-                C.DC, C._G, C._G, C.DC,
-                C.DC, C.DC, C.DC, C.DC
-            });
-
-        public static readonly TileInfo Ship = new TileInfo(TileValue.Ship, new StringBuilder()
-                .Append("~~~~")
-                .Append("~XX~")
-                .Append("~XX~")
-                .Append("~~~~"),
-            new int[]
-            {
-                C.DC, C.DC, C.DC, C.DC,
-                C.DC, C._G, C._G, C.DC,
-                C.DC, C._G, C._G, C.DC,
-                C.DC, C.DC, C.DC, C.DC
-            });
-
-        public static readonly TileInfo ImpossibleShip = new TileInfo(TileValue.ImpossibleShip, new StringBuilder()
+        public static readonly TileProperty ImpossibleShip = new TileProperty(TextureValue.ImpossibleShip, new StringBuilder()
                 .Append("~~~~")
                 .Append("~XX~")
                 .Append("~XX~")
@@ -163,9 +108,10 @@ namespace Game.Tile
                 C.DC, C.DR, C.DR, C.DC,
                 C.DC, C.DR, C.DR, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
+            }, false
+            );
 
-        public static readonly TileInfo ImpossibleShipHitbox = new TileInfo(TileValue.ImpossibleShipHitbox, new StringBuilder()
+        public static readonly TileProperty ImpossibleShipHitbox = new TileProperty(TextureValue.ImpossibleShipHitbox, new StringBuilder()
                 .Append("~~~~")
                 .Append("~XX~")
                 .Append("~XX~")
@@ -176,9 +122,24 @@ namespace Game.Tile
                 C.DC, C._Y, C._Y, C.DC,
                 C.DC, C._Y, C._Y, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
-        
-        public static readonly TileInfo HitShip = new TileInfo(TileValue.HitShip, new StringBuilder()
+            }, false
+            );
+
+        public static readonly TileProperty HitWater = new TileProperty(TextureValue.HitWater, new StringBuilder()
+                .Append("~~~~")
+                .Append("~^^~")
+                .Append("~^^~")
+                .Append("~~~~"),
+            new int[]
+            {
+                C.DC, C.DC, C.DC, C.DC,
+                C.DC, C._Y, C._Y, C.DC,
+                C.DC, C._Y, C._Y, C.DC,
+                C.DC, C.DC, C.DC, C.DC
+            }, false
+            );
+
+        public static readonly TileProperty HitShip = new TileProperty(TextureValue.HitShip, new StringBuilder()
                 .Append("*~~*")
                 .Append("~**~")
                 .Append("~**~")
@@ -189,50 +150,52 @@ namespace Game.Tile
                 C.DC, C.DR, C.DR, C.DC,
                 C.DC, C.DR, C.DR, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
-
-        public static readonly TileInfo HitWater = new TileInfo(TileValue.HitWater, new StringBuilder()
+            }, false
+        );
+            
+        public static readonly TileProperty IntactShip = new TileProperty(TextureValue.IntactShip, new StringBuilder()
                 .Append("~~~~")
-                .Append("~^^~")
-                .Append("~^^~")
+                .Append("~XX~")
+                .Append("~XX~")
                 .Append("~~~~"),
             new int[]
             {
                 C.DC, C.DC, C.DC, C.DC,
-                C.DC, C._Y, C._Y, C.DC,
-                C.DC, C._Y, C._Y, C.DC,
+                C.DC, C._G, C._G, C.DC,
+                C.DC, C._G, C._G, C.DC,
                 C.DC, C.DC, C.DC, C.DC
-            });
+            }, false
+        );
 
-        public static readonly Dictionary<int, TileInfo> Tiles = new Dictionary<int, TileInfo>()
+        public static readonly Dictionary<string, TileProperty> Tiles = new Dictionary<string, TileProperty>()
         {
-            {EmptyTileV1.exponent, EmptyTileV1},
-            {EmptyTileV2.exponent, EmptyTileV2},
-            {SelectedTileRed.exponent, SelectedTileRed},
-            {SelectedTileGreen.exponent, SelectedTileGreen},
-            {Ship.exponent, Ship},
-            {ImpossibleShipHitbox.exponent, ImpossibleShipHitbox},
-            {ImpossibleShip.exponent, ImpossibleShip},
-            {HitShip.exponent, HitShip},
-            {HitWater.exponent, HitWater},
-            {VoidTile.exponent, VoidTile},
+            { VoidTile.Value, VoidTile },
+            { EmptyTileV1.Value, EmptyTileV1 },
+            { EmptyTileV2.Value, EmptyTileV2 },
+            { ImpossibleShip.Value, ImpossibleShip },
+            { ImpossibleShipHitbox.Value, ImpossibleShipHitbox },
+            { HitWater.Value, HitWater },
+            { HitShip.Value, HitShip },
+            { IntactShip.Value, IntactShip },
+            { Sprite.PlayerSprite.SelectedTileGreen.Value, Sprite.PlayerSprite.SelectedTileGreen },
+            { Sprite.PlayerSprite.SelectedTileRed.Value, Sprite.PlayerSprite.SelectedTileRed },
         };
 
 
-        public class TileInfo
+        public class TileProperty
         {
-            public readonly int power;
-            public readonly int exponent;
-            public readonly CharInfo[] charInfoArray;
+            public readonly string Value;
+            public readonly CharInfo[] CharInfoArray;
+            public readonly bool HasCollision;
 
-            public TileInfo(int exponent, StringBuilder sTileSymbols, int[] fgColors)
+            public TileProperty(string value, StringBuilder sbTileSymbols, int[] fgColors, bool hasCollision)
             {
-                this.power = 1 << exponent;
-                this.exponent = exponent;
-                charInfoArray = new CharInfo[GetHeight() * GetWidth()];
-                for (int i = 0; i < GetHeight() * GetWidth(); i++)
+                this.HasCollision = hasCollision;
+                this.Value = value;
+                this.CharInfoArray = new CharInfo[Height * Width];
+                for (int i = 0; i < Height * Width; i++)
                 {
-                    charInfoArray[i] = new CharInfo(sTileSymbols[i], fgColors[i]);
+                    CharInfoArray[i] = new CharInfo(sbTileSymbols[i], fgColors[i]);
                 }
             }
         }
