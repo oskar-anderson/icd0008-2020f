@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.Json;
 using Domain.Model;
 using Game;
 using RogueSharp;
@@ -9,6 +10,7 @@ using Troschuetz.Random.Generators;
 using Game.Pack;
 using IrrKlang;
 using NUnit.Framework;
+using System.Text.Json.Serialization;
 
 namespace Tests
 {
@@ -21,6 +23,7 @@ namespace Tests
             // Pack(1);
             // SoundTest();
             // MultiArrayTest();
+            StackReversesOnSerializationTest();
         }
 
         private static void RandomTimeTest()
@@ -184,6 +187,25 @@ namespace Tests
             List<Rectangle> packedRects;
             ShipPlacement.TryPackShip(shipsSizesToPlace, 10, 10, placementType, out packedRects);
             return packedRects;
+        }
+
+        private class SerializeMe
+        {
+            public Stack<int> Order { get; set; } = new Stack<int>();
+        }
+
+        private static void StackReversesOnSerializationTest()
+        {
+            List<int> items = new List<int>() { 1, 2, 3 };
+            SerializeMe serializeMe = new SerializeMe();
+            foreach (var item in items)
+                serializeMe.Order.Push(item);
+            string serialized = JsonSerializer.Serialize(serializeMe);
+            SerializeMe deserialized = JsonSerializer.Deserialize<SerializeMe>(serialized);
+            for (int i = 0; i < items.Count; i++)
+            {
+                Console.WriteLine("deserialized: " + deserialized.Order.Pop() + "; original: " + serializeMe.Order.Pop());
+            }
         }
 
         private static void SoundTest()

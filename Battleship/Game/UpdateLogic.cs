@@ -178,7 +178,7 @@ namespace Game
                 {
                    if (TileData.SeaTiles.Contains(selectedOppTileValue))
                    { 
-                      gameData.ActivePlayer.ShootingHistory.Push(
+                      gameData.ActivePlayer.ShootingHistory.Add(
                          new ShootingHistoryItem(
                             gameData.ActivePlayer.Sprite.Pos,
                             selectedOppTileValue,
@@ -207,7 +207,7 @@ namespace Game
                          {
                             gameData.Board2D.Set(change.Point, change.CurrValue);
                          }
-                         gameData.ActivePlayer.ShootingHistory.Push(new ShootingHistoryItem(
+                         gameData.ActivePlayer.ShootingHistory.Add(new ShootingHistoryItem(
                             gameData.ActivePlayer.Sprite.Pos,
                             selectedOppTileValue,
                             TextureValue.HitShip, 
@@ -222,7 +222,7 @@ namespace Game
                       else
                       {
                          gameData.Board2D.Set(gameData.ActivePlayer.Sprite.Pos, TextureValue.HitShip);
-                         gameData.ActivePlayer.ShootingHistory.Push(
+                         gameData.ActivePlayer.ShootingHistory.Add(
                             new ShootingHistoryItem(
                                gameData.ActivePlayer.Sprite.Pos,
                                selectedOppTileValue,
@@ -239,7 +239,8 @@ namespace Game
 
                 if (Input.KeyStatuses[UsedKeyKeys.R].IsPressed && gameData.ActivePlayer.ShootingHistory.Count != 0)
                 {
-                   ShootingHistoryItem historyItem = gameData.ActivePlayer.ShootingHistory.Pop();
+                   ShootingHistoryItem historyItem = gameData.ActivePlayer.ShootingHistory.Last();
+                   gameData.ActivePlayer.ShootingHistory.Remove(historyItem);
                    if (historyItem.AllChangedPoints != null)
                    {
                       foreach (var changedPoint in historyItem.AllChangedPoints) 
@@ -408,7 +409,7 @@ namespace Game
              if (player.Sprite.Pos.X > bounds.Left && player.fKeyboardMoveTimeout < 0)
              {
                 Point playerPos = new Point(player.Sprite.Pos.X - 1, player.Sprite.Pos.Y);
-                if (! TileFunctions.GetTile(board.Get(playerPos)).HasCollision)
+                if (! TileData.Tiles[board.Get(playerPos)].HasCollision)
                 {
                    player.Sprite.Pos = playerPos;
                    player.fCameraPixelPosX -= TileData.Width;
@@ -421,7 +422,7 @@ namespace Game
              if (player.Sprite.Pos.Y < bounds.Bottom - 1 && player.fKeyboardMoveTimeout < 0)
              {
                 Point playerPos = new Point(player.Sprite.Pos.X, player.Sprite.Pos.Y + 1);
-                if (! TileFunctions.GetTile(board.Get(playerPos)).HasCollision)
+                if (! TileData.Tiles[board.Get(playerPos)].HasCollision)
                 {
                    player.Sprite.Pos = playerPos;
                    player.fCameraPixelPosY += TileData.Height;
@@ -434,7 +435,7 @@ namespace Game
              if (player.Sprite.Pos.X < bounds.Right - 1 && player.fKeyboardMoveTimeout < 0)
              {
                 Point playerPos = new Point(player.Sprite.Pos.X + 1, player.Sprite.Pos.Y);
-                if (! TileFunctions.GetTile(board.Get(playerPos)).HasCollision)
+                if (! TileData.Tiles[board.Get(playerPos)].HasCollision)
                 {
                    player.Sprite.Pos = playerPos;
                    player.fCameraPixelPosX += TileData.Width;
@@ -447,7 +448,7 @@ namespace Game
              if (player.Sprite.Pos.Y > bounds.Top && player.fKeyboardMoveTimeout < 0)
              {
                 Point playerPos = new Point(player.Sprite.Pos.X, player.Sprite.Pos.Y - 1);
-                if (! TileFunctions.GetTile(board.Get(playerPos)).HasCollision)
+                if (! TileData.Tiles[board.Get(playerPos)].HasCollision)
                 {
                    player.Sprite.Pos = playerPos;
                    player.fCameraPixelPosY -= TileData.Height;

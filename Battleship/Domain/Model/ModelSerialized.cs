@@ -61,7 +61,7 @@ namespace Domain.Model
     public sealed class PlayerSerializable : AbstractPlayer
     {
         public override List<Rectangle> Ships { get; set; } = null!;
-        public override Stack<ShootingHistoryItem> ShootingHistory { get; set; } = new Stack<ShootingHistoryItem>();
+        public override List<ShootingHistoryItem> ShootingHistory { get; set; } = new List<ShootingHistoryItem>();
         public override Sprite.PlayerSprite Sprite { get; set; } = null!;
         public override Rectangle BoardBounds { get; set; }
         public override int ShipBeingPlacedIdx { get; set; } = 0;

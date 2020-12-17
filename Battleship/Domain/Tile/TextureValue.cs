@@ -1,4 +1,6 @@
-﻿namespace Domain.Tile
+﻿using System.Dynamic;
+
+namespace Domain.Tile
 {
     public static class TextureValue
     {

@@ -117,7 +117,7 @@ namespace Game
                         y + offsetY / TileData.Height);
                     TileData.CharInfo[] tile = ! mapTileBound.Contains(coordinate) 
                         ? TileData.VoidTile.CharInfoArray
-                        : TileFunctions.GetTile(board.Get(coordinate)).CharInfoArray;
+                        : TileData.Tiles[board.Get(coordinate)].CharInfoArray;
                     for (int i = 0; i < tile.Length; i++)
                     {
                         Point pixelPosition = new Point(

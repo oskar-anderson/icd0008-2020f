@@ -139,7 +139,7 @@ namespace DAL
             {
                 if (value != null)
                 { 
-                    ShootingHistory = JsonSerializer.Deserialize<Stack<ShootingHistoryItem>>(value);
+                    ShootingHistory = JsonSerializer.Deserialize<List<ShootingHistoryItem>>(value);
                 }
             }
         }
@@ -173,7 +173,7 @@ namespace DAL
         public override List<Rectangle> Ships { get; set; } = null!;
 
         [NotMapped]
-        public override Stack<ShootingHistoryItem> ShootingHistory { get; set; } = new Stack<ShootingHistoryItem>();
+        public override List<ShootingHistoryItem> ShootingHistory { get; set; } = new List<ShootingHistoryItem>();
 
         [NotMapped] 
         public override Sprite.PlayerSprite Sprite { get; set; } = null!;

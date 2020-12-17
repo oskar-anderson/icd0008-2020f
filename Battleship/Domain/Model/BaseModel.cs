@@ -27,7 +27,8 @@ namespace Domain.Model
     public abstract class AbstractPlayer
     {
         public abstract List<Rectangle> Ships { get; set; }
-        public abstract Stack<ShootingHistoryItem> ShootingHistory { get; set; }
+        // works as a stack, but can be serialized safely!
+        public abstract List<ShootingHistoryItem> ShootingHistory { get; set; }
         public abstract Sprite.PlayerSprite Sprite { get; set; }
         public abstract Rectangle BoardBounds { get; set; }
         public abstract int ShipBeingPlacedIdx { get; set; }

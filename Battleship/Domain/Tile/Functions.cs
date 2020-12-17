@@ -7,14 +7,6 @@ namespace Domain.Tile
 {
     public static class TileFunctions
     {
-        public static TileData.TileProperty GetTile(string tileValue)
-        {
-            TileData.TileProperty tile = TileData.Tiles[tileValue];
-            if (tile.CharInfoArray.Any(x => x == null)) { throw new Exception("Tile content is messed up!");}
-            if (tile.CharInfoArray.Length != TileData.Width * TileData.Height) { throw new Exception("Tile size is messed up!");}
-
-            return tile;
-        }
 
         public static string[,] GetRndSeaTiles(int width, int height)
         {

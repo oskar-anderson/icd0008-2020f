@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace Domain.Tile
@@ -197,6 +198,8 @@ namespace Domain.Tile
                 {
                     CharInfoArray[i] = new CharInfo(sbTileSymbols[i], fgColors[i]);
                 }
+                if (CharInfoArray.Any(x => x == null)) { throw new Exception("Tile content is messed up!");}
+                if (CharInfoArray.Length != Width * Height) { throw new Exception("Tile size is messed up!");}
             }
         }
         
