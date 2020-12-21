@@ -1,0 +1,133 @@
+@page
+@model WebApp.Pages.CRUDStockPart.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<button class="btn btn-primary" type="button" data-toggle="collapse" 
+        data-target="#multiCollapseExample2" aria-expanded="false" 
+        aria-controls="multiCollapseExample2">Show Restock</button>
+<button class="btn btn-primary" type="button" data-toggle="collapse" 
+        data-target="#multiCollapseExample3" aria-expanded="false" 
+        aria-controls="multiCollapseExample3">Show Parts</button>
+
+
+<div style="padding-top: 20px" class="collapse multi-collapse" id="multiCollapseExample2">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StockParts[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StockParts[0].Category)
+            </th>
+            <th>
+                Needed
+            </th>
+            <th>
+                Cost per
+            </th>
+            <th>
+                Total Cost
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.StockPartsRestock) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @{ int needed = item.OptimalQuantity - item.CurrentQuantity; }
+                    @needed
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @{ int partTotal = item.Price * (item.OptimalQuantity - item.CurrentQuantity); }
+                    @partTotal
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <p style="align-content: end">Total Cost @Model.TotalRestockCost</p>
+</div>
+
+
+<section class="card-list collapse multi-collapse container" id="multiCollapseExample3" style="padding-top: 3rem">
+    <form class="form-inline" method="get">
+        <div class="form-group">
+            <input asp-for="Search" value="@Model.Search" style="width: 50em" class="form-control"/>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Search" class="btn btn-primary"/>
+            <input type="submit" value="Reset" name="ToDoAction" class="btn btn-secondary"
+                   @(string.IsNullOrWhiteSpace(Model.Search) ? "disabled=\"disabled\"" : "")/>
+        </div>
+    </form>
+    
+    <button class="btn btn-primary" style="width: 10%;" type="button" data-toggle="collapse" 
+            data-target="#multiCollapseExample1" aria-expanded="false" 
+            aria-controls="multiCollapseExample1">Search help</button>
+    <div style="padding-top: 20px">
+        <ul class="collapse multi-collapse" id="multiCollapseExample1">
+            <li>
+                <b>breaks</b> - Search by Name
+            </li>
+            <li>
+                <b>name: front axle; category: suspension; currentquantity: 3</b> - Search by Name, Category and CurrentQuantity
+            </li>
+            <li>
+                <b>category: !suspension</b> - Search by Category for everything but suspension
+            </li>
+            <li>
+                <b>currentquantity: !2, !3</b> - Search by CurrentQuantity where quantity is not 2 and not 3
+            </li>
+        </ul>
+    </div>
+    
+    <p style="padding-bottom: 5rem">Records: @Model.StockParts.Count</p>
+    
+    @foreach (var item in Model.StockParts)
+    {
+        <article class="card">
+            <header class="card-header">
+                @{
+                    double percentage = Math.Round((double) (100 * item.CurrentQuantity) / item.OptimalQuantity);
+                    // string delta = (item.OptimalQuantity - item.CurrentQuantity).ToString();
+                    double hue = Math.Clamp(percentage / 100, 0, 1) * 100;
+                }
+                <h2>@item.Name</h2>
+                <p>
+                    <span style="color: hsl(@hue, 100%, 50%)">
+                        ██
+                    </span>
+                    Stock: @percentage% (@item.CurrentQuantity out of @item.OptimalQuantity)
+                </p>
+            </header>
+            <div>
+                Category: @item.Category <br>
+                Location: @item.Location <br>
+                Price: @item.Price <br>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </div>
+        </article>
+    }
+</section>

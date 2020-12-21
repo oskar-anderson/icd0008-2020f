@@ -1,0 +1,62 @@
+@page
+@model WebApp.Pages.CRUDStockPart.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>StockPart</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="form-group">
+                <label asp-for="StockPart.Name" class="control-label"></label>
+                <input asp-for="StockPart.Name" class="form-control" />
+                <span asp-validation-for="StockPart.Name" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <label asp-for="StockPart.Category" class="control-label"></label>
+                <input asp-for="StockPart.Category" class="form-control" />
+                <span asp-validation-for="StockPart.Category" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockPart.CurrentQuantity" class="control-label"></label>
+                <input asp-for="StockPart.CurrentQuantity" class="form-control" />
+                <span asp-validation-for="StockPart.CurrentQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockPart.OptimalQuantity" class="control-label"></label>
+                <input asp-for="StockPart.OptimalQuantity" class="form-control" />
+                <span asp-validation-for="StockPart.OptimalQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockPart.Location" class="control-label"></label>
+                <input asp-for="StockPart.Location" class="form-control" />
+                <span asp-validation-for="StockPart.Location" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockPart.Price" class="control-label"></label>
+                <input asp-for="StockPart.Price" class="form-control" />
+                <span asp-validation-for="StockPart.Price" class="text-danger"></span>
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,86 @@
+@page
+@using Domain
+@model WebApp.Pages.CRUDServiceTicket.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].Service)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].Service!.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].Vehicle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].RequestedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].IsDone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].MechanicsNames)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ServiceTickets[0].Comment)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.ServiceTickets) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Service!.Name)
+
+                <ul>
+                    @foreach (ServiceStockPart serviceStockPart in Model.ServiceStockParts[item.ServiceID])
+                    {
+                        <li>
+                            @{
+                                string stockPartName = serviceStockPart.StockPart!.Name;
+                                int serviceStockPartQuantity = serviceStockPart.Quantity;
+                            }
+                            @serviceStockPartQuantity - @stockPartName
+                        </li>
+                    }
+                </ul>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Service!.Price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Vehicle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RequestedBy)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MechanicsNames)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Comment)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

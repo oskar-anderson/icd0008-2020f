@@ -1,0 +1,60 @@
+@page
+@model WebApp.Pages.CRUDServiceTicket.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ServiceTicket</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ServiceTicket.ID" />
+            <div class="form-group">
+                <label asp-for="ServiceTicket.ServiceID" class="control-label"></label>
+                <select asp-for="ServiceTicket.ServiceID" class="form-control" asp-items="@Model.Services"></select>
+                <span asp-validation-for="ServiceTicket.ServiceID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceTicket.Vehicle" class="control-label"></label>
+                <input asp-for="ServiceTicket.Vehicle" class="form-control" />
+                <span asp-validation-for="ServiceTicket.Vehicle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceTicket.RequestedBy" class="control-label"></label>
+                <input asp-for="ServiceTicket.RequestedBy" class="form-control" />
+                <span asp-validation-for="ServiceTicket.RequestedBy" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="ServiceTicket.IsDone" /> @Html.DisplayNameFor(model => model.ServiceTicket.IsDone)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceTicket.MechanicsNames" class="control-label"></label>
+                <input asp-for="ServiceTicket.MechanicsNames" class="form-control" />
+                <span asp-validation-for="ServiceTicket.MechanicsNames" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ServiceTicket.Comment" class="control-label"></label>
+                <input asp-for="ServiceTicket.Comment" class="form-control" />
+                <span asp-validation-for="ServiceTicket.Comment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

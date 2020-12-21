@@ -1,0 +1,53 @@
+@page
+@model WebApp.Pages.CRUDService.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Services[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Services[0].Price)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Services) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+                <ul>
+                    @foreach (var serviceStockPart in Model.ServiceToServiceStockParts[item.ID])
+                    {
+                        string liString = $"Part: {serviceStockPart.StockPart!.Name}; " +
+                                      $"Stock: {serviceStockPart.StockPart!.CurrentQuantity}; " +
+                                      $"Need: {serviceStockPart.Quantity}";
+                        
+                    <li>@liString</li>
+                    }
+                    
+                </ul>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Price)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ID">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ID">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
